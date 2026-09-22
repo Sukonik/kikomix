@@ -1,0 +1,132 @@
+/* ============================================================
+   KikoMix · Design Tokens ("Project TriBeam")
+   All color, spacing, type, radius, shadow, and motion tokens.
+   Vanilla CSS. No dependencies. Mobile-first.
+   ============================================================ */
+
+:root {
+  /* ---------- Surfaces ---------- */
+  --bg: #06070c;          /* midnight black */
+  --bg2: #0c0e16;         /* raised surface */
+  --card: #12141d;        /* card surface */
+  --card-2: #171a26;      /* hover / pressed card */
+  --line: rgba(255, 255, 255, .08);
+  --line-strong: rgba(255, 255, 255, .14);
+
+  /* ---------- Brand: TriBeam ---------- */
+  --gold: #f2b90d;        /* GoldenSun */
+  --gold-soft: #ffd964;   /* GoldenSun soft */
+  --crimson: #e5484d;     /* Tri-Beam */
+  --solar: #ffd60a;       /* Solar Flare */
+  --electric: #3b9dff;    /* Dodon Ray */
+  --violet: #a78bfa;      /* Multi-Form */
+  --teal: #2dd4bf;        /* Four Witches */
+
+  /* ---------- Technique accents (alias map) ---------- */
+  --accent-tribeam: var(--crimson);
+  --accent-solar: var(--solar);
+  --accent-dodon: var(--electric);
+  --accent-multiform: var(--violet);
+  --accent-witches: var(--teal);
+
+  /* ---------- Text ---------- */
+  --text: #f4f2ea;
+  --muted: #9aa0b4;
+  --faint: #6b7190;
+
+  /* ---------- Source brand colors ---------- */
+  --spotify: #1db954;
+  --apple: #fa2d48;
+  --youtube: #ff0000;
+  --soundcloud: #ff5500;
+  --local: #a78bfa;
+
+  /* ---------- Shape ---------- */
+  --radius: 14px;
+  --radius-sm: 9px;
+  --radius-lg: 20px;
+  --radius-pill: 999px;
+
+  /* ---------- Spacing scale ---------- */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+
+  /* ---------- Type ---------- */
+  --font-stack: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, system-ui, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --fs-hero: 2rem;        /* 32px — screen titles */
+  --fs-title: 1.375rem;   /* 22px — section / now-playing title */
+  --fs-body: 1rem;        /* 16px — base */
+  --fs-small: .875rem;    /* 14px — secondary */
+  --fs-tiny: .75rem;      /* 12px — captions, badges */
+  --lh-tight: 1.2;
+  --lh-body: 1.5;
+  --weight-regular: 400;
+  --weight-medium: 600;
+  --weight-bold: 800;
+
+  /* ---------- Shadows ---------- */
+  --shadow-card: 0 8px 24px rgba(0, 0, 0, .45);
+  --shadow-pop: 0 12px 40px rgba(0, 0, 0, .6);
+  --shadow-gold: 0 4px 24px rgba(242, 185, 13, .35);
+  --shadow-crimson: 0 4px 24px rgba(229, 72, 77, .35);
+  --shadow-electric: 0 4px 24px rgba(59, 157, 255, .35);
+
+  /* ---------- Layout ---------- */
+  --app-max: 720px;       /* main content column */
+  --tabbar-height: 64px;
+
+  /* ---------- Motion ---------- */
+  --ease: cubic-bezier(.22, 1, .36, 1);
+  --dur-fast: .15s;
+  --dur-med: .3s;
+  --dur-slow: 6s;
+}
+
+/* ============================================================
+   Keyframes
+   ============================================================ */
+
+/* Subtle breathing on beam accents — used on active tab icons,
+   transport glow, and logo treatments. */
+@keyframes beamPulse {
+  0%, 100% { opacity: .85; }
+  50%      { opacity: 1; }
+}
+
+/* Slow horizontal drift for the decorative waveform layer. */
+@keyframes waveDrift {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+/* Gentle glow swell for Solar Flare surfaces.
+   Keep amplitude small — never a full flash. */
+@keyframes glowPulse {
+  0%, 100% { filter: brightness(1); }
+  50%      { filter: brightness(1.12); }
+}
+
+/* Generic continuous rotation (spinners, dials). */
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Rise-and-fade for toast entry. */
+@keyframes riseIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Soft fade for overlays / modals. */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}

@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#06070c">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>KikoMix — Focus Every Sound</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/svg+xml" href="icons/logo.svg">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/features.css">
+</head>
+<body>
+  <noscript>
+    <div class="noscript">
+      <p><strong>KikoMix needs JavaScript.</strong></p>
+      <p>This is a demo web app and all playback is simulated — but the shell itself
+      requires JavaScript to switch tabs, search, and render the mock player.</p>
+    </div>
+  </noscript>
+
+  <header class="app-header">
+    <img src="icons/logo.svg" alt="KikoMix logo" class="logo" width="44" height="44">
+    <div class="brand">
+      <div class="wordmark">KikoMix</div>
+      <div class="tagline">Focus Every Sound</div>
+    </div>
+  </header>
+
+  <main id="main">
+    <!-- HOME -->
+    <section class="tab" id="tab-home" role="tabpanel" aria-label="Home">
+      <div id="home-lion" class="card"><!-- LionDavid intro card mounts here --></div>
+      <h2 class="section-title">Recently played</h2>
+      <div id="home-recent" class="track-list"></div>
+      <h2 class="section-title">Recommended for you</h2>
+      <div id="home-recommended" class="track-list"></div>
+      <h2 class="section-title">Services</h2>
+      <div id="home-services" class="chips"></div>
+    </section>
+
+    <!-- SEARCH -->
+    <section class="tab" id="tab-search" role="tabpanel" aria-label="Search">
+      <form id="search-form" class="search-form" role="search">
+        <input id="search-input" type="search" name="q" autocomplete="off"
+               placeholder="Search title or artist…" aria-label="Search tracks">
+        <button type="submit" class="btn btn-primary">Search</button>
+      </form>
+      <p id="search-status" class="status" role="status" aria-live="polite"></p>
+      <div id="search-results" class="track-list"></div>
+    </section>
+
+    <!-- LIBRARY -->
+    <section class="tab" id="tab-library" role="tabpanel" aria-label="Library">
+      <div id="library-root"><!-- KM.library.render() mounts here --></div>
+    </section>
+
+    <!-- MIXES -->
+    <section class="tab" id="tab-mixes" role="tabpanel" aria-label="Mixes">
+      <div id="mixes-root"><!-- KM.mixes.render() mounts here --></div>
+    </section>
+
+    <!-- NOW PLAYING -->
+    <section class="tab" id="tab-nowplaying" role="tabpanel" aria-label="Now playing">
+      <div id="np-core"><!-- KM.player renders the simulated player here --></div>
+      <div id="np-extras"><!-- feature modules (techniques, etc.) mount here --></div>
+    </section>
+
+    <!-- SOURCES -->
+    <section class="tab" id="tab-sources" role="tabpanel" aria-label="Sources">
+      <div id="sources-root"><!-- KM.sources.render() mounts here --></div>
+    </section>
+  </main>
+
+  <!-- LionDavid contextual tip bar (hidden until the lion module shows it) -->
+  <div id="lion-tip" class="tip-bar" hidden></div>
+
+  <!-- Onboarding mount (lion module) -->
+  <div id="onboarding"></div>
+
+  <!-- Transient toast messages -->
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <nav id="tabbar" role="tablist" aria-label="Primary">
+    <button type="button" role="tab" data-tab="home" aria-selected="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10.5V20h13v-9.5"/></svg>
+      <span>Home</span>
+    </button>
+    <button type="button" role="tab" data-tab="search" aria-selected="false">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></svg>
+      <span>Search</span>
+    </button>
+    <button type="button" role="tab" data-tab="library" aria-selected="false">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 3 9 5-9 5-9-5 9-5Z"/><path d="m3.5 12.5 8.5 4.7 8.5-4.7"/><path d="m3.5 16.5 8.5 4.7 8.5-4.7"/></svg>
+      <span>Library</span>
+    </button>
+    <button type="button" role="tab" data-tab="mixes" aria-selected="false">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M4 7h9M17 7h3"/><circle cx="15" cy="7" r="2.2"/><path d="M4 17h3M11 17h9"/><circle cx="9" cy="17" r="2.2"/></svg>
+      <span>Mixes</span>
+    </button>
+    <button type="button" role="tab" data-tab="nowplaying" aria-selected="false">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M10 8.8v6.4l5.2-3.2L10 8.8Z" fill="currentColor" stroke="none"/></svg>
+      <span>Playing</span>
+    </button>
+    <button type="button" role="tab" data-tab="sources" aria-selected="false">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="6" cy="6" r="2.4"/><circle cx="18" cy="6" r="2.4"/><circle cx="12" cy="18" r="2.4"/><path d="M7.8 7.5l3 7M16.2 7.5l-3 7M8.4 6h7.2"/></svg>
+      <span>Sources</span>
+    </button>
+  </nav>
+
+  <script src="js/data.js"></script>
+  <script src="js/adapters.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/search.js"></script>
+  <script src="js/player.js"></script>
+  <script src="js/library.js"></script>
+  <script src="js/mixes.js"></script>
+  <script src="js/liondavid.js"></script>
+  <script src="js/sources.js"></script>
+  <script src="js/mimicry.js"></script>
+  <script src="js/solarflare.js"></script>
+  <script src="js/techniques.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

@@ -94,3 +94,27 @@ This project is led by King David (AI project lead) with Nathan. Ideas, issues, 
 ## License
 
 Licensed under the [Mozilla Public License 2.0](LICENSE).
+
+---
+
+## Web app (MVP One)
+
+The first working prototype lives in [`web/`](web/) — a responsive website
+that is also an installable PWA, built with vanilla HTML/CSS/JS (zero
+dependencies, no build step):
+
+```bash
+cd web
+python3 -m http.server 8000
+```
+
+It demos the full **Search → Play → Save** loop against mock providers
+(Spotify, Apple Music, YouTube, SoundCloud, Local Files): unified search with
+duplicate merging and source badges, cross-service mixes with a
+duplicate-combining prompt, simulated Now Playing, LionDavid onboarding and
+tips, a Mimicry vibe-queue prototype, a photosensitivity-safe Solar Flare
+visual prototype, and UI mocks for Tri-Beam, Dodon Ray, Four Witches, and
+Multi-Form. Playback is honestly labeled as simulated — real provider OAuth
+plugs in later via the seam documented in `web/README.md` and
+`web/js/adapters.js`. See [`web/README.md`](web/README.md) for run/deploy
+instructions, the architecture, and the roadmap to native iOS.

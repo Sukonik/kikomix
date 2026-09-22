@@ -1,0 +1,256 @@
+/* ============================================================
+   KikoMix · Features
+   Now Playing, technique panels (Tri-Beam / Solar Flare / Dodon Ray /
+   Multi-Form / Four Witches), solar stage glow layer, EQ sliders,
+   Dodon Ray timeline markers, onboarding overlay, source list rows.
+   ============================================================ */
+
+/* ---------- Now Playing ---------- */
+.now-playing {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding-bottom: var(--space-4);
+}
+.now-playing__cover-wrap {
+  position: relative;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-pop);
+}
+.now-playing__meta { text-align: center; }
+.now-playing__title { font-size: var(--fs-title); font-weight: var(--weight-bold); }
+.now-playing__artist { color: var(--muted); font-size: var(--fs-small); margin-top: var(--space-1); }
+
+/* Progress bar: track + fill driven by --fill (percent). */
+.progress {
+  position: relative;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  touch-action: none;
+}
+.progress__track {
+  width: 100%;
+  height: 6px;
+  border-radius: var(--radius-pill);
+  background: rgba(255, 255, 255, .14);
+  position: relative;
+  overflow: hidden;
+}
+.progress__fill {
+  position: absolute; inset: 0 auto 0 0;
+  width: var(--fill, 0%);
+  border-radius: var(--radius-pill);
+  background: linear-gradient(90deg, var(--gold), var(--gold-soft));
+  box-shadow: var(--shadow-gold);
+}
+.progress__times {
+  display: flex;
+  justify-content: space-between;
+  font-size: var(--fs-tiny);
+  color: var(--faint);
+  font-variant-numeric: tabular-nums;
+  margin-top: -6px;
+}
+
+/* Transport controls: shuffle | prev | play | next | repeat */
+.transport {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-5);
+}
+.transport__btn {
+  width: 48px; height: 48px;
+  display: grid; place-items: center;
+  border-radius: 50%;
+  color: var(--muted);
+  transition: color var(--dur-fast) var(--ease), background-color var(--dur-fast) var(--ease);
+}
+.transport__btn:hover { color: var(--text); background: rgba(255, 255, 255, .06); }
+.transport__btn svg { width: 24px; height: 24px; }
+.transport__btn--play {
+  width: 72px; height: 72px;
+  background: linear-gradient(135deg, var(--gold-soft), var(--gold));
+  color: #1a1200;
+  box-shadow: var(--shadow-gold);
+  animation: beamPulse 3s ease-in-out infinite;
+}
+.transport__btn--play svg { width: 32px; height: 32px; }
+.transport__btn[aria-pressed="true"] { color: var(--gold-soft); }
+
+/* ---------- Technique panels ----------
+   Each technique gets a left accent border in its signature color. */
+.tech-panel {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--accent, var(--gold));
+  border-radius: var(--radius);
+  padding: var(--space-4);
+  box-shadow: var(--shadow-card);
+}
+.tech-panel + .tech-panel { margin-top: var(--space-3); }
+.tech-panel__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  margin-bottom: var(--space-3);
+}
+.tech-panel__name {
+  font-weight: var(--weight-bold);
+  color: var(--accent, var(--gold));
+  font-size: var(--fs-body);
+}
+.tech-panel__desc { font-size: var(--fs-small); color: var(--muted); margin-bottom: var(--space-3); }
+
+.tech-panel--tribeam   { --accent: var(--accent-tribeam); }
+.tech-panel--solar     { --accent: var(--accent-solar); }
+.tech-panel--dodon     { --accent: var(--accent-dodon); }
+.tech-panel--multiform { --accent: var(--accent-multiform); }
+.tech-panel--witches   { --accent: var(--accent-witches); }
+
+/* Active technique: soft wash of the accent color. */
+.tech-panel.is-active {
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--accent) 10%, transparent), transparent 70%),
+    var(--card);
+}
+
+/* ---------- Solar stage: full-bleed glow layer ----------
+   Sits behind the Now Playing cover during Solar Flare.
+   --art-hue tints the wash to the track art. */
+.solar-stage {
+  --art-hue: 50;
+  position: relative;
+}
+.solar-stage::before {
+  content: "";
+  position: absolute;
+  inset: -8% -12%;
+  z-index: -1;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle,
+      hsla(var(--art-hue), 100%, 60%, .45),
+      hsla(var(--art-hue), 100%, 50%, .12) 55%,
+      transparent 75%);
+  filter: blur(24px);
+  animation: glowPulse 5s ease-in-out infinite;
+  pointer-events: none;
+}
+
+/* ---------- EQ slider rows ---------- */
+.eq-row {
+  display: grid;
+  grid-template-columns: 44px 1fr 44px;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-2) 0;
+}
+.eq-row__label { font-size: var(--fs-tiny); color: var(--muted); text-transform: uppercase; letter-spacing: .05em; }
+.eq-row__value {
+  font-size: var(--fs-tiny);
+  color: var(--gold-soft);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+/* ---------- Dodon Ray timeline markers ----------
+   Markers sit on top of a progress-like track; --pos places each. */
+.timeline {
+  position: relative;
+  height: 40px;
+  margin: var(--space-3) 0;
+}
+.timeline__track {
+  position: absolute; inset: 17px 0 auto 0;
+  height: 6px;
+  border-radius: var(--radius-pill);
+  background: rgba(255, 255, 255, .12);
+}
+.timeline__marker {
+  position: absolute;
+  top: 8px;
+  left: var(--pos, 50%);
+  transform: translateX(-50%);
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  background: var(--electric);
+  border: 3px solid var(--bg);
+  box-shadow: var(--shadow-electric);
+  cursor: pointer;
+}
+.timeline__marker::after {
+  content: attr(data-label);
+  position: absolute;
+  top: 24px; left: 50%;
+  transform: translateX(-50%);
+  font-size: var(--fs-tiny);
+  color: var(--muted);
+  white-space: nowrap;
+}
+.timeline__marker.is-hit { background: var(--gold); }
+
+/* ---------- Onboarding overlay ---------- */
+.onboarding {
+  position: fixed; inset: 0;
+  z-index: 90;
+  display: grid;
+  place-items: center;
+  background: rgba(3, 4, 8, .9);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  padding: var(--space-4);
+  animation: fadeIn var(--dur-med) var(--ease);
+}
+.onboarding[hidden] { display: none; }
+.onboarding__card {
+  width: 100%;
+  max-width: 420px;
+  background: var(--bg2);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-lg);
+  padding: var(--space-6) var(--space-5);
+  text-align: center;
+  box-shadow: var(--shadow-pop);
+  animation: riseIn var(--dur-med) var(--ease);
+}
+.onboarding__logo { width: 88px; height: 88px; margin: 0 auto var(--space-4); }
+.onboarding__title { font-size: var(--fs-title); font-weight: var(--weight-bold); margin-bottom: var(--space-2); }
+.onboarding__title .tagline { display: block; font-size: var(--fs-small); font-weight: var(--weight-regular); color: var(--gold-soft); margin-top: var(--space-1); }
+.onboarding__text { font-size: var(--fs-small); color: var(--muted); margin-bottom: var(--space-5); }
+.onboarding__dots { display: flex; gap: var(--space-2); justify-content: center; margin: var(--space-4) 0; }
+.onboarding__dot { width: 8px; height: 8px; border-radius: 50%; background: rgba(255, 255, 255, .2); }
+.onboarding__dot.is-current { background: var(--gold); width: 24px; border-radius: var(--radius-pill); }
+
+/* ---------- Source list rows (connect Spotify / Apple / …) ---------- */
+.source-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+}
+.source-row + .source-row { margin-top: var(--space-2); }
+.source-row__icon {
+  width: 40px; height: 40px;
+  border-radius: var(--radius-sm);
+  display: grid; place-items: center;
+  background: color-mix(in srgb, var(--src, var(--local)) 16%, transparent);
+  color: var(--src, var(--local));
+  flex-shrink: 0;
+}
+.source-row__icon svg { width: 22px; height: 22px; }
+.source-row[data-source="spotify"]    { --src: var(--spotify); }
+.source-row[data-source="apple"]      { --src: var(--apple); }
+.source-row[data-source="youtube"]    { --src: var(--youtube); }
+.source-row[data-source="soundcloud"] { --src: var(--soundcloud); }
+.source-row[data-source="local"]      { --src: var(--local); }
+.source-row__meta { flex: 1; min-width: 0; }
+.source-row__name { font-weight: var(--weight-medium); }
+.source-row__status { font-size: var(--fs-small); color: var(--muted); }
+.source-row__status.is-connected { color: #4ade80; }

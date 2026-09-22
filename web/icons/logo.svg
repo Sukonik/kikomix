@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- KikoMix TriBeam mark: three audio beams (gold, crimson, electric
+     blue) converging from the left into a single golden waveform.
+     Original, geometric, no animals, no anime references. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" role="img" aria-label="KikoMix logo">
+  <rect width="96" height="96" rx="22" fill="#06070c"/>
+  <!-- three converging beams, tapered left to right -->
+  <path d="M14 34 L52 44 L52 46.5 L14 40 Z" fill="#f2b90d"/>
+  <path d="M14 46.5 L52 47.6 L52 50.4 L14 51.5 Z" fill="#e5484d"/>
+  <path d="M14 59 L52 53.5 L52 56 L14 64 Z" fill="#3b9dff"/>
+  <!-- single golden waveform they converge into -->
+  <g stroke="#ffd964" stroke-width="4" stroke-linecap="round">
+    <path d="M62 34 V62"/>
+    <path d="M70 40 V56"/>
+    <path d="M78 30 V66"/>
+    <path d="M86 42 V54"/>
+  </g>
+</svg>
