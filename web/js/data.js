@@ -1,9 +1,18 @@
 /* KikoMix — Project TriBeam: mock catalog data layer.
- * Sets window.KM_DATA = { tracks: [...] }.
+ * Sets window.KM_DATA = { tracks: [...] } and window.KM_LINKS = { providerLinksFor }.
  *
  * ALL TRACKS ARE MOCK. Artist names are invented; nothing here represents a
  * real recording or a real chart hit. In production this data comes from the
  * provider adapters (see adapters.js), not from a static file.
+ *
+ * FREE-TIER FIRST: every track carries providerLinks — REAL, functional
+ * provider search URLs built from the track's title + artist (URL-encoded).
+ * These are search pages, not fake track IDs, so they always work. When a
+ * real adapter supplies real IDs, use the direct deep-link patterns instead:
+ *   Spotify:    https://open.spotify.com/track/{id}
+ *   YouTube:    https://www.youtube.com/watch?v={id}
+ *   SoundCloud: https://soundcloud.com/{artist-slug}/{track-slug}
+ * (see README.md "Free-tier honesty" for what free playback can/can't do).
  *
  * STEM-SEPARATION NOTE: Multi-Form stem separation is only enabled for the
  * single public-domain-style classical track t032 ("Moonlight Sonata (Solo
@@ -227,5 +236,23 @@
       hue:190, sections:[{name:'Intro',at:0},{name:'Verse',at:34},{name:'Chorus',at:104},{name:'Bridge',at:186},{name:'Chorus',at:240},{name:'Outro',at:272}] }
   ];
 
+  /* ---------- provider search links (free-tier, always real URLs) ----------
+   * Built from title + artist with URL-encoding — never invented IDs.
+   * Used by search.js for the per-row "Open in provider" link, and by
+   * mixes.js-style UIs for any track that lacks a direct deep link. */
+  function providerLinksFor(title, artist) {
+    var q = encodeURIComponent((String(title || '') + ' ' + String(artist || '')).trim());
+    return {
+      spotify: 'https://open.spotify.com/search/' + q,
+      youtube: 'https://www.youtube.com/results?search_query=' + q,
+      soundcloud: 'https://soundcloud.com/search?q=' + q
+    };
+  }
+
+  TRACKS.forEach(function (t) {
+    t.providerLinks = providerLinksFor(t.title, t.artist);
+  });
+
   window.KM_DATA = { tracks: TRACKS };
+  window.KM_LINKS = { providerLinksFor: providerLinksFor };
 })();

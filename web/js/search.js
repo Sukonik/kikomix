@@ -84,6 +84,35 @@
     return ((h % 360) + 360) % 360;
   }
 
+  /**
+   * "Open in provider" link for a result row. Prefers the row's preferred
+   * source, then falls back to any of the row's sources that has a link
+   * (free-tier providers carry providerLinks; Apple/local do not, so those
+   * rows open via a free source instead). Returns { id, url } or null.
+   */
+  function providerLinkFor(row) {
+    var t = row.track || {};
+    var links = t.providerLinks || null;
+    if (!links && window.KM_LINKS && typeof window.KM_LINKS.providerLinksFor === 'function') {
+      try { links = window.KM_LINKS.providerLinksFor(t.title, t.artist); } catch (e) { links = null; }
+    }
+    if (!links) return null;
+    var order = [];
+    if (row.preferred) order.push(row.preferred);
+    (row.sources || []).forEach(function (id) { if (order.indexOf(id) === -1) order.push(id); });
+    for (var i = 0; i < order.length; i++) {
+      if (links[order[i]]) return { id: order[i], url: links[order[i]] };
+    }
+    // Free-tier fallback: rows that only exist on Apple/local (no direct
+    // link) still get a working "Open in …" link via a free provider's
+    // search page, matching what the player bar does.
+    var freeOrder = ['spotify', 'youtube', 'soundcloud'];
+    for (var j = 0; j < freeOrder.length; j++) {
+      if (links[freeOrder[j]]) return { id: freeOrder[j], url: links[freeOrder[j]] };
+    }
+    return null;
+  }
+
   function pickPreferred(row, priority) {
     var pref = null;
     try { pref = localStorage.getItem('km:pref:' + encodeURIComponent(row.key)); } catch (e) {}
@@ -144,6 +173,13 @@
       return '<option value="' + esc(id) + '"' + (id === row.preferred ? ' selected' : '') + '>' +
         esc(sourceName(id)) + '</option>';
     }).join('');
+    // Additive: "Open in provider" — real provider search URL (target _blank,
+    // rel noopener). Uses the row's preferred source, else any linked source.
+    var open = providerLinkFor(row);
+    var openHtml = open
+      ? '<a class="btn btn-ghost" href="' + esc(open.url) + '" target="_blank" rel="noopener">Open in ' +
+        esc(sourceName(open.id)) + '</a>'
+      : '';
     return '<article class="track-row" data-key="' + esc(row.key) + '">' +
       '<div class="cover" style="--hue:' + esc(hue) + '" aria-hidden="true"></div>' +
       '<div class="track-meta">' +
@@ -158,6 +194,7 @@
       '<div class="track-actions">' +
         '<button type="button" class="btn btn-primary" data-action="play">Play</button>' +
         '<button type="button" class="btn btn-ghost" data-action="mix">\uFF0B Mix</button>' +
+        openHtml +
       '</div>' +
     '</article>';
   }

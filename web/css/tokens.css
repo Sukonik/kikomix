@@ -1,53 +1,114 @@
 /* ============================================================
-   KikoMix · Design Tokens ("Project TriBeam")
-   All color, spacing, type, radius, shadow, and motion tokens.
-   Vanilla CSS. No dependencies. Mobile-first.
+   KikoMix · Design Tokens — Material You (M3) dark scheme
+   Fuses Material Design 3 tonal color with Spotify's player
+   clarity, keeping KikoMix's dark identity + refined gold
+   LionDavid accent.
+
+   Vanilla CSS. No dependencies. Mobile-first. System fonts only.
+
+   Conventions
+   - Surfaces use M3 tonal steps (container-lowest → highest),
+     never flat grays.
+   - Primary is a refined, slightly desaturated gold (#e3a008).
+   - Technique accents are muted for dark mode and reserved for
+     their features only — never for general UI chrome.
+   - State layers use color-mix() with --state-hover/--state-pressed.
+   - Elevation 0–3 = tonal raise + soft shadow (M3 dark has no
+     heavy shadows).
    ============================================================ */
 
 :root {
-  /* ---------- Surfaces ---------- */
-  --bg: #06070c;          /* midnight black */
-  --bg2: #0c0e16;         /* raised surface */
-  --card: #12141d;        /* card surface */
-  --card-2: #171a26;      /* hover / pressed card */
-  --line: rgba(255, 255, 255, .08);
-  --line-strong: rgba(255, 255, 255, .14);
+  /* ---------- M3 tonal surfaces (dark) ---------- */
+  --surface: #0e0e12;                  /* app background */
+  --surface-container-lowest: #08080b; /* deepest recess */
+  --surface-container-low: #121217;    /* cards, list rows */
+  --surface-container: #17171d;        /* tab bar, sheets */
+  --surface-container-high: #1e1e25;   /* search bar, controls */
+  --surface-container-highest: #27272f;/* inputs, slider tracks */
+  --on-surface: #f1efe8;               /* primary text */
+  --on-surface-variant: #a9a49a;       /* secondary text (warm gray) */
+  --outline: #8f887a;                  /* strong borders */
+  --outline-variant: rgba(241, 239, 232, .09); /* hairlines */
 
-  /* ---------- Brand: TriBeam ---------- */
-  --gold: #f2b90d;        /* GoldenSun */
-  --gold-soft: #ffd964;   /* GoldenSun soft */
-  --crimson: #e5484d;     /* Tri-Beam */
-  --solar: #ffd60a;       /* Solar Flare */
-  --electric: #3b9dff;    /* Dodon Ray */
-  --violet: #a78bfa;      /* Multi-Form */
-  --teal: #2dd4bf;        /* Four Witches */
+  /* ---------- Primary: refined LionDavid gold ----------
+     Slightly desaturated from #f2b90d so it reads premium. */
+  --primary: #e3a008;
+  --on-primary: #1e1600;
+  --primary-container: #3d2f06;        /* dark tonal gold */
+  --on-primary-container: #ffd964;     /* light gold text on dark */
 
-  /* ---------- Technique accents (alias map) ---------- */
-  --accent-tribeam: var(--crimson);
-  --accent-solar: var(--solar);
-  --accent-dodon: var(--electric);
-  --accent-multiform: var(--violet);
-  --accent-witches: var(--teal);
+  /* ---------- Secondary: muted slate ---------- */
+  --secondary: #9aa4b8;
+  --on-secondary: #12161d;
+  --secondary-container: #262c37;
+  --on-secondary-container: #cfd7e4;
 
-  /* ---------- Text ---------- */
-  --text: #f4f2ea;
-  --muted: #9aa0b4;
-  --faint: #6b7190;
+  /* ---------- Error ---------- */
+  --error: #ffb4ab;
+  --on-error: #1c0505;
+  --error-container: #5c1512;
+  --on-error-container: #ffdad6;
 
-  /* ---------- Source brand colors ---------- */
+  /* ---------- Technique accents (muted for dark mode) ----------
+     Reserved for their features only: Tri-Beam, Solar Flare,
+     Dodon Ray, Multi-Form, Four Witches. */
+  --accent-tribeam: #d95359;    /* crimson */
+  --accent-solar: #e3b81e;      /* solar yellow */
+  --accent-dodon: #6ea8f2;      /* electric blue */
+  --accent-multiform: #ab90e8;  /* violet */
+  --accent-witches: #4fc3b3;    /* teal */
+
+  /* ---------- Source brand colors (kept refined) ---------- */
   --spotify: #1db954;
   --apple: #fa2d48;
   --youtube: #ff0000;
   --soundcloud: #ff5500;
   --local: #a78bfa;
 
-  /* ---------- Shape ---------- */
-  --radius: 14px;
-  --radius-sm: 9px;
-  --radius-lg: 20px;
-  --radius-pill: 999px;
+  /* ---------- M3 shape scale ---------- */
+  --shape-xs: 4px;
+  --shape-sm: 8px;
+  --shape-md: 12px;
+  --shape-lg: 16px;
+  --shape-xl: 28px;
+  --shape-full: 999px;
 
-  /* ---------- Spacing scale ---------- */
+  /* ---------- M3 type scale (system stack = honest Roboto) ---------- */
+  --font-stack: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, system-ui, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --ts-display: 3.5625rem;   /* 57 — display large */
+  --ts-headline: 2rem;        /* 32 — headline large */
+  --ts-title-lg: 1.375rem;   /* 22 — title large */
+  --ts-title-md: 1rem;        /* 16 — title medium */
+  --ts-title-sm: .875rem;     /* 14 — title small */
+  --ts-body-lg: 1rem;         /* 16 — body large */
+  --ts-body-md: .875rem;      /* 14 — body medium */
+  --ts-body-sm: .75rem;       /* 12 — body small */
+  --ts-label-lg: .875rem;     /* 14 — label large */
+  --ts-label-md: .75rem;      /* 12 — label medium */
+  --ts-label-sm: .6875rem;    /* 11 — label small */
+  --lh-tight: 1.2;
+  --lh-body: 1.5;
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+  --weight-bold: 700;
+
+  /* ---------- M3 state-layer opacities ----------
+     Usage: color-mix(in srgb, <fg> var(--state-hover), <bg>) */
+  --state-hover: 8%;
+  --state-pressed: 12%;
+  --state-focus: 12%;
+  --state-drag: 16%;
+
+  /* ---------- Elevation 0–3: tonal raise + soft shadow ---------- */
+  --elevation-0: none;
+  --elevation-1: 0 1px 3px rgba(0, 0, 0, .4);
+  --elevation-2: 0 2px 6px 1px rgba(0, 0, 0, .35), 0 1px 2px rgba(0, 0, 0, .4);
+  --elevation-3: 0 4px 12px 2px rgba(0, 0, 0, .4), 0 2px 6px rgba(0, 0, 0, .35);
+
+  /* ---------- Spacing scale (16/24 rhythm: 4 / 6) ---------- */
   --space-1: 4px;
   --space-2: 8px;
   --space-3: 12px;
@@ -57,45 +118,59 @@
   --space-8: 32px;
   --space-10: 40px;
 
-  /* ---------- Type ---------- */
-  --font-stack: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-    "Helvetica Neue", Arial, system-ui, sans-serif;
-  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-  --fs-hero: 2rem;        /* 32px — screen titles */
-  --fs-title: 1.375rem;   /* 22px — section / now-playing title */
-  --fs-body: 1rem;        /* 16px — base */
-  --fs-small: .875rem;    /* 14px — secondary */
-  --fs-tiny: .75rem;      /* 12px — captions, badges */
-  --lh-tight: 1.2;
-  --lh-body: 1.5;
-  --weight-regular: 400;
-  --weight-medium: 600;
-  --weight-bold: 800;
-
-  /* ---------- Shadows ---------- */
-  --shadow-card: 0 8px 24px rgba(0, 0, 0, .45);
-  --shadow-pop: 0 12px 40px rgba(0, 0, 0, .6);
-  --shadow-gold: 0 4px 24px rgba(242, 185, 13, .35);
-  --shadow-crimson: 0 4px 24px rgba(229, 72, 77, .35);
-  --shadow-electric: 0 4px 24px rgba(59, 157, 255, .35);
-
   /* ---------- Layout ---------- */
-  --app-max: 720px;       /* main content column */
-  --tabbar-height: 64px;
+  --app-max: 720px;        /* main content column */
+  --tabbar-height: 80px;   /* M3 navigation bar height */
 
   /* ---------- Motion ---------- */
   --ease: cubic-bezier(.22, 1, .36, 1);
+  --ease-standard: cubic-bezier(.2, 0, 0, 1);
   --dur-fast: .15s;
   --dur-med: .3s;
   --dur-slow: 6s;
+
+  /* ============================================================
+     Legacy aliases — kept so every existing selector keeps working.
+     New code should use the M3 tokens above.
+     ============================================================ */
+  --bg: var(--surface);
+  --bg2: var(--surface-container-low);
+  --card: var(--surface-container-low);
+  --card-2: var(--surface-container);
+  --line: var(--outline-variant);
+  --line-strong: rgba(241, 239, 232, .16);
+  --gold: var(--primary);
+  --gold-soft: var(--on-primary-container);
+  --crimson: var(--accent-tribeam);
+  --solar: var(--accent-solar);
+  --electric: var(--accent-dodon);
+  --violet: var(--accent-multiform);
+  --teal: var(--accent-witches);
+  --muted: var(--on-surface-variant);
+  --faint: #6f6a60;
+  --radius: var(--shape-md);
+  --radius-sm: var(--shape-sm);
+  --radius-lg: var(--shape-lg);
+  --radius-pill: var(--shape-full);
+  --fs-hero: var(--ts-headline);
+  --fs-title: var(--ts-title-lg);
+  --fs-body: var(--ts-body-lg);
+  --fs-small: var(--ts-body-md);
+  --fs-tiny: var(--ts-body-sm);
+  --shadow-card: var(--elevation-1);
+  --shadow-pop: var(--elevation-3);
+  --shadow-gold: 0 2px 12px rgba(227, 160, 8, .25);
+  --shadow-crimson: 0 2px 12px rgba(217, 83, 89, .25);
+  --shadow-electric: 0 2px 12px rgba(110, 168, 242, .25);
 }
 
 /* ============================================================
-   Keyframes
+   Keyframes — decorative only. All are gentle; none strobe.
+   Solar Flare's pulse lives in js/solarflare.js (4s gentle pulse,
+   never a strobe) and is NOT duplicated here.
    ============================================================ */
 
-/* Subtle breathing on beam accents — used on active tab icons,
-   transport glow, and logo treatments. */
+/* Subtle breathing on accents — used sparingly on decorative marks. */
 @keyframes beamPulse {
   0%, 100% { opacity: .85; }
   50%      { opacity: 1; }
@@ -107,11 +182,11 @@
   to   { transform: translateX(-50%); }
 }
 
-/* Gentle glow swell for Solar Flare surfaces.
+/* Gentle glow swell for decorative surfaces.
    Keep amplitude small — never a full flash. */
 @keyframes glowPulse {
   0%, 100% { filter: brightness(1); }
-  50%      { filter: brightness(1.12); }
+  50%      { filter: brightness(1.08); }
 }
 
 /* Generic continuous rotation (spinners, dials). */
@@ -119,7 +194,7 @@
   to { transform: rotate(360deg); }
 }
 
-/* Rise-and-fade for toast entry. */
+/* Rise-and-fade for toast / sheet entry. */
 @keyframes riseIn {
   from { opacity: 0; transform: translateY(12px); }
   to   { opacity: 1; transform: translateY(0); }

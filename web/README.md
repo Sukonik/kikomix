@@ -84,6 +84,63 @@ call is optional-chained, so the shell stays up even if a module fails.
    secure backend. Playback must stay on the authorized provider; KikoMix
    never re-hosts, downloads, or alters protected audio.
 
+## Free-tier honesty
+
+KikoMix is free-tier first. Every track carries `providerLinks` in
+`js/data.js` — **real, functional provider search URLs** built from the
+track's title + artist (URL-encoded), never invented IDs:
+
+- Spotify: `https://open.spotify.com/search/<title+artist>`
+- YouTube: `https://www.youtube.com/results?search_query=<title+artist>`
+- SoundCloud: `https://soundcloud.com/search?q=<title+artist>`
+
+Each search result row shows an **"Open in provider"** link (new tab)
+using the row's preferred source, falling back to any free source that
+has a link (Apple Music and local files carry no provider link).
+
+What free playback can honestly do today (verified 2026-09-22):
+
+- **Spotify (Free badge)** — Spotify's old 30-second `preview_url` Web
+  API field is **deprecated for apps created after 27 Nov 2024** and
+  returns `null` for effectively all tracks, so a real integration cannot
+  count on in-app previews
+  ([source](https://github.com/aug0612/bj-rkfy/blob/HEAD/SPOTIFY_APP_REMOTE.md)).
+  In the Spotify app, free listeners can search and play specific tracks
+  ("Search and Play") within a **daily on-demand allowance with ads**,
+  after which playback falls back to shuffle with limited skips
+  ([source](https://www.abijita.com/spotify-free-users-can-now-play-any-song-but-with-limits/),
+  [source](https://eastleighvoice.co.ke/technology/211521/spotify-expands-free-tier-with-on-demand-song-playback)).
+  Full, unrestricted on-demand always needs Premium — KikoMix never
+  implies otherwise.
+- **YouTube (Free badge)** — Full-length playback via the official
+  [YouTube IFrame Player API](https://developers.google.com/youtube/iframe_api_reference),
+  wherever the uploader allows embedding (uploaders can disable embeds).
+  No account needed.
+- **SoundCloud (Free badge)** — Full streams of public tracks via the
+  official [SoundCloud HTML5 widget](https://developers.soundcloud.com/docs/api/html5-widget).
+  No account needed.
+- **Apple Music (Subscription badge, de-emphasized)** — Requires an
+  Apple Music subscription for full playback; KikoMix shows the catalog
+  only.
+- **Local Files (Your files badge)** — Files the user already owns on
+  the device; no account, no subscription.
+
+Direct deep-link patterns (need real adapter IDs — see the seam below):
+
+- Spotify: `https://open.spotify.com/track/{id}`
+- YouTube: `https://www.youtube.com/watch?v={id}`
+- SoundCloud: `https://soundcloud.com/{artist-slug}/{track-slug}`
+
+**Mocked vs. real:** everything above currently runs on
+`ProviderAdapter` *mocks* — the "Open in provider" links are real URLs,
+but in-app playback is simulated and always labeled
+("Simulated playback — connect a real service for actual audio" on Now
+Playing). Real integration needs OAuth tokens plus the provider's
+official embed/player SDK (Spotify IFrame API / App Remote, YouTube
+IFrame Player API, SoundCloud widget API) and must respect each
+provider's terms — KikoMix never re-hosts, downloads, or alters
+protected audio.
+
 ## Product boundaries honored
 
 - No downloading or altering protected streams; no DRM removal.

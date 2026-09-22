@@ -1,11 +1,507 @@
 /* ============================================================
-   KikoMix · Features
-   Now Playing, technique panels (Tri-Beam / Solar Flare / Dodon Ray /
-   Multi-Form / Four Witches), solar stage glow layer, EQ sliders,
-   Dodon Ray timeline markers, onboarding overlay, source list rows.
+   KikoMix · Features — Material You (M3) + Spotify clarity
+   Now Playing, technique panels (Tri-Beam / Solar Flare /
+   Dodon Ray / Multi-Form / Four Witches), Mimicry, LionDavid,
+   mixes, source rows, onboarding.
+
+   SAFETY (Solar Flare): the glow layer, its gentle 4s pulse,
+   the photosensitivity warning modal, the brightness control,
+   reduced-motion support, and default-OFF behavior are owned by
+   js/solarflare.js and are NOT restyled here. This file only
+   restyles the .solar-card control panel. No strobing, ever.
    ============================================================ */
 
 /* ---------- Now Playing ---------- */
+.np-empty {
+  text-align: center;
+  padding: var(--space-10) var(--space-4);
+  color: var(--on-surface-variant);
+}
+.np-empty p + p { margin-top: var(--space-2); }
+
+.np-cover {
+  margin-bottom: var(--space-4);
+  box-shadow: var(--elevation-2);
+}
+.np-title {
+  font-size: 1.75rem;
+  font-weight: var(--weight-bold);
+  letter-spacing: -.01em;
+  line-height: var(--lh-tight);
+  text-align: center;
+  min-width: 0;
+}
+/* Collapse chevron at the top of the Now Playing tab. */
+.np-collapse {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  margin: calc(-1 * var(--space-2)) auto var(--space-2);
+  border-radius: 50%;
+  color: var(--on-surface-variant);
+  transition: background-color var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease);
+}
+.np-collapse:hover {
+  background: color-mix(in srgb, var(--on-surface) var(--state-hover), transparent);
+  color: var(--on-surface);
+}
+.np-collapse svg { width: 24px; height: 24px; }
+/* Title row: title + like button. */
+.np-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+}
+.np-title-row .np-title { flex: 1; }
+.np-like[aria-pressed="true"] { color: var(--primary); }
+.np-like[aria-pressed="true"]:hover {
+  color: var(--primary);
+  background: color-mix(in srgb, var(--primary) var(--state-hover), transparent);
+}
+.np-artist {
+  margin-top: var(--space-1);
+  text-align: center;
+  font-size: var(--ts-body-md);
+  color: var(--on-surface-variant);
+}
+.np-badges {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-2);
+  margin-top: var(--space-3);
+}
+
+/* Progress: M3 linear indicator, 4px, with a 48px touch band.
+   .np-bar width is driven inline by the player clock. */
+.np-progress {
+  position: relative;
+  padding-block: 22px; /* 48px touch target around a 4px bar */
+  margin-top: var(--space-2);
+  cursor: pointer;
+}
+.np-progress::before {
+  content: "";
+  position: absolute;
+  left: 0; right: 0; top: 50%;
+  height: 4px;
+  transform: translateY(-50%);
+  border-radius: var(--shape-full);
+  background: var(--surface-container-highest);
+}
+.np-bar {
+  position: absolute;
+  left: 0; top: 50%;
+  height: 4px;
+  width: 0;
+  transform: translateY(-50%);
+  border-radius: var(--shape-full);
+  background: var(--primary);
+}
+.np-times {
+  display: flex;
+  justify-content: space-between;
+  font-size: var(--ts-body-sm);
+  color: var(--on-surface-variant);
+  font-variant-numeric: tabular-nums;
+  margin-top: 2px;
+}
+
+/* Transport: icon buttons + a gold FAB-style play button. */
+.np-transport {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-4);
+  margin-top: var(--space-4);
+}
+.tbtn {
+  /* Reset .btn chrome → circular icon button. */
+  display: inline-grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  min-height: 48px;
+  min-width: 0;
+  padding: 0;
+  border-radius: 50%;
+  background: transparent;
+  border-color: transparent;
+  box-shadow: none;
+  color: var(--on-surface-variant);
+}
+.tbtn:hover {
+  background: color-mix(in srgb, var(--on-surface) var(--state-hover), transparent);
+  color: var(--on-surface);
+  box-shadow: none;
+}
+.tbtn:active {
+  background: color-mix(in srgb, var(--on-surface) var(--state-pressed), transparent);
+  box-shadow: none;
+}
+.tbtn svg { width: 28px; height: 28px; }
+.tbtn.tbtn-main {
+  width: 72px;
+  height: 72px;
+  background: var(--primary);
+  color: var(--on-primary);
+  box-shadow: var(--elevation-2);
+}
+.tbtn.tbtn-main:hover {
+  background: color-mix(in srgb, var(--on-primary) var(--state-hover), var(--primary));
+  color: var(--on-primary);
+  box-shadow: var(--elevation-3);
+}
+.tbtn.tbtn-main:active {
+  background: color-mix(in srgb, var(--on-primary) var(--state-pressed), var(--primary));
+}
+.tbtn.tbtn-main svg { width: 36px; height: 36px; }
+
+/* Up-next queue. */
+.np-queue {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-top: var(--space-2);
+}
+.np-queue li {
+  display: flex;
+  align-items: center;
+  min-height: 56px;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--shape-md);
+  font-size: var(--ts-body-md);
+  color: var(--on-surface-variant);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.np-queue li.current {
+  color: var(--primary);
+  font-weight: var(--weight-semibold);
+  background: color-mix(in srgb, var(--primary) 10%, transparent);
+}
+
+/* ---------- Technique panels ----------
+   Each technique keys off --tech (set inline by the JS modules).
+   color-mix() tames any saturated value toward the surface so the
+   panels stay premium, never neon. */
+.tech-panel {
+  --accent: var(--tech, var(--primary));
+  background: var(--surface-container-low);
+  border: 1px solid var(--outline-variant);
+  border-left: 3px solid color-mix(in srgb, var(--accent) 55%, var(--surface-container-low));
+  border-radius: var(--shape-lg);
+  padding: var(--space-5) var(--space-4);
+  box-shadow: var(--elevation-1);
+}
+.tech-panel + .tech-panel { margin-top: var(--space-3); }
+.tech-panel h4 {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  font-size: var(--ts-title-md);
+  font-weight: var(--weight-bold);
+  margin-bottom: var(--space-1);
+}
+.tech-panel > p {
+  font-size: var(--ts-body-md);
+  color: var(--on-surface-variant);
+}
+/* Active technique: a soft wash of its (muted) accent. */
+.tech-panel.is-active {
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--accent) 10%, transparent), transparent 70%),
+    var(--surface-container-low);
+}
+/* Legacy modifier hooks (kept working; map onto --tech). */
+.tech-panel--tribeam   { --tech: var(--accent-tribeam); }
+.tech-panel--solar     { --tech: var(--accent-solar); }
+.tech-panel--dodon     { --tech: var(--accent-dodon); }
+.tech-panel--multiform { --tech: var(--accent-multiform); }
+.tech-panel--witches   { --tech: var(--accent-witches); }
+/* Legacy BEM children (kept working). */
+.tech-panel__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  margin-bottom: var(--space-3);
+}
+.tech-panel__name {
+  font-weight: var(--weight-bold);
+  color: var(--tech, var(--primary));
+  font-size: var(--ts-body-lg);
+}
+.tech-panel__desc { font-size: var(--ts-body-md); color: var(--on-surface-variant); margin-bottom: var(--space-3); }
+
+.tech-note {
+  margin-top: var(--space-3);
+  font-size: var(--ts-body-sm);
+  line-height: var(--lh-body);
+  color: var(--on-surface-variant);
+  opacity: .85;
+}
+
+/* Battery mock (Tri-Beam). */
+.battery-mock {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-top: var(--space-3);
+  font-size: var(--ts-body-sm);
+  color: var(--on-surface-variant);
+}
+.battery-bar {
+  display: inline-block;
+  width: 120px;
+  height: 8px;
+  border-radius: var(--shape-full);
+  background: var(--surface-container-highest);
+  overflow: hidden;
+  vertical-align: middle;
+}
+.battery-bar > span {
+  display: block;
+  height: 100%;
+  border-radius: var(--shape-full);
+  background: var(--primary);
+}
+
+/* ---------- Dodon Ray timeline markers ----------
+   Functional geometry is injected by js/techniques.js
+   (#km-tech-style); here are focus + tone refinements only. */
+.timeline { /* layout owned by the injected #km-tech-style */ }
+.timeline-marker:focus-visible {
+  outline: 2px solid var(--on-surface);
+  outline-offset: 3px;
+}
+/* 48px touch target: expand the hit area around the 16px marker. */
+.timeline-marker::after {
+  content: '';
+  position: absolute;
+  inset: -16px;
+}
+.timeline-labels { color: var(--on-surface-variant); }
+/* Legacy BEM timeline (kept working). */
+.timeline__track {
+  position: absolute; inset: 17px 0 auto 0;
+  height: 6px;
+  border-radius: var(--shape-full);
+  background: var(--surface-container-highest);
+}
+.timeline__marker {
+  position: absolute;
+  top: 8px;
+  left: var(--pos, 50%);
+  transform: translateX(-50%);
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  background: var(--electric);
+  border: 3px solid var(--surface);
+  box-shadow: var(--elevation-1);
+  cursor: pointer;
+}
+.timeline__marker::after {
+  content: attr(data-label);
+  position: absolute;
+  top: 24px; left: 50%;
+  transform: translateX(-50%);
+  font-size: var(--ts-body-sm);
+  color: var(--on-surface-variant);
+  white-space: nowrap;
+}
+.timeline__marker.is-hit { background: var(--primary); }
+
+/* ---------- Solar Flare ----------
+   The glow layer itself (.solar-stage / .solar-glow) is owned by
+   js/solarflare.js: fixed full-viewport layer, gentle 4s pulse
+   only, .still variant for reduced motion, brightness via inline
+   opacity, default OFF, warning modal on first enable.
+   This file only styles the control card below. */
+.solar-card { position: relative; overflow: hidden; }
+.solar-card::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--accent-solar), transparent 70%);
+  opacity: .6;
+}
+.solar-card .section-title { margin-top: 0; }
+/* Hook for the JS-owned glow layer — intentionally unstyled here. */
+.solar-stage {}
+
+/* ---------- Mimicry ---------- */
+.mimicry-panel .section-title { margin-top: 0; }
+.mimicry-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: var(--space-3);
+  margin-top: var(--space-4);
+}
+.seed-pick {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  flex: 1;
+  min-width: 200px;
+  font-size: var(--ts-label-lg);
+  font-weight: var(--weight-medium);
+  color: var(--on-surface-variant);
+}
+.seed-row {
+  background: var(--surface-container-high);
+  border-radius: var(--shape-md);
+  padding: var(--space-2);
+}
+.mimicry-results { margin-top: var(--space-4); }
+
+/* ---------- Mixes ---------- */
+.mix-card .track-row { padding-inline: var(--space-1); }
+.mix-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-bottom: var(--space-2);
+}
+.mix-head h4 {
+  font-size: var(--ts-title-md);
+  font-weight: var(--weight-bold);
+  letter-spacing: -.01em;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.mix-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-top: var(--space-4);
+}
+.mix-new {
+  display: flex;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+.mix-new input { flex: 1; min-width: 0; }
+.mix-new .btn { flex-shrink: 0; }
+.mix-pick-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin: var(--space-4) 0;
+}
+.mix-pick { width: 100%; justify-content: space-between; }
+
+/* ---------- Source rows ----------
+   DOM: .track-row.source-row — tonal card treatment on top of the
+   Spotify-style list row. */
+.source-row {
+  background: var(--surface-container-low);
+  border: 1px solid var(--outline-variant);
+  border-radius: var(--shape-lg);
+  padding: var(--space-3);
+  box-shadow: var(--elevation-1);
+}
+.source-row + .source-row { margin-top: var(--space-2); }
+.source-row.src-dimmed { opacity: .55; }
+.section-sub {
+  margin: var(--space-6) 0 var(--space-2);
+  font-size: var(--ts-title-sm);
+  font-weight: var(--weight-bold);
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--on-surface-variant);
+}
+.src-blurb { white-space: normal; }
+/* Compact tier chip embedded in a track title (e.g. "Free", "Pro"). */
+.chip-tier {
+  min-height: 0;
+  padding: 3px 8px;
+  margin-left: var(--space-2);
+  font-size: var(--ts-label-sm);
+  vertical-align: 2px;
+}
+/* Library tab body below the chip tabs. */
+.library-body { margin-top: var(--space-4); }
+.source-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.src-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--ts-body-sm);
+  color: var(--on-surface-variant);
+}
+.src-switch select {
+  width: auto;
+  min-height: 48px;
+  font-size: var(--ts-body-md);
+}
+/* Legacy BEM source-row children (kept working). */
+.source-row__icon {
+  width: 40px; height: 40px;
+  border-radius: var(--shape-sm);
+  display: grid; place-items: center;
+  background: color-mix(in srgb, var(--src, var(--local)) 16%, transparent);
+  color: var(--src, var(--local));
+  flex-shrink: 0;
+}
+.source-row__icon svg { width: 22px; height: 22px; }
+.source-row__meta { flex: 1; min-width: 0; }
+.source-row__name { font-weight: var(--weight-medium); }
+.source-row__status { font-size: var(--ts-body-md); color: var(--on-surface-variant); }
+.source-row__status.is-connected { color: #7de2a3; }
+
+/* ---------- LionDavid ---------- */
+.lion-card {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-4);
+  background:
+    linear-gradient(135deg,
+      color-mix(in srgb, var(--primary) 10%, var(--surface-container-low)),
+      var(--surface-container-low) 60%);
+  border: 1px solid color-mix(in srgb, var(--primary) 25%, transparent);
+}
+.lion-logo { flex-shrink: 0; border-radius: var(--shape-md); }
+.lion-card-body { flex: 1; min-width: 0; }
+.lion-card-body .section-title { margin: 0 0 var(--space-1); }
+.lion-tag {
+  font-size: var(--ts-label-lg);
+  font-weight: var(--weight-semibold);
+  color: var(--primary);
+  margin-bottom: var(--space-2);
+}
+.lion-card-body > p {
+  font-size: var(--ts-body-md);
+  color: var(--on-surface-variant);
+}
+.lion-card-body .btn { margin-top: var(--space-3); }
+.lion-points {
+  list-style: disc;
+  margin: var(--space-3) 0 var(--space-4);
+  padding-left: var(--space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  font-size: var(--ts-body-md);
+  color: var(--on-surface-variant);
+}
+.lion-points li::marker { color: var(--primary); }
+.lion-points strong { color: var(--on-surface); }
+
+/* ---------- Legacy feature blocks (kept working) ---------- */
 .now-playing {
   display: flex;
   flex-direction: column;
@@ -14,15 +510,14 @@
 }
 .now-playing__cover-wrap {
   position: relative;
-  border-radius: var(--radius-lg);
+  border-radius: var(--shape-lg);
   overflow: hidden;
-  box-shadow: var(--shadow-pop);
+  box-shadow: var(--elevation-3);
 }
 .now-playing__meta { text-align: center; }
-.now-playing__title { font-size: var(--fs-title); font-weight: var(--weight-bold); }
-.now-playing__artist { color: var(--muted); font-size: var(--fs-small); margin-top: var(--space-1); }
+.now-playing__title { font-size: var(--ts-title-lg); font-weight: var(--weight-bold); }
+.now-playing__artist { color: var(--on-surface-variant); font-size: var(--ts-body-md); margin-top: var(--space-1); }
 
-/* Progress bar: track + fill driven by --fill (percent). */
 .progress {
   position: relative;
   height: 32px;
@@ -33,28 +528,25 @@
 .progress__track {
   width: 100%;
   height: 6px;
-  border-radius: var(--radius-pill);
-  background: rgba(255, 255, 255, .14);
+  border-radius: var(--shape-full);
+  background: var(--surface-container-highest);
   position: relative;
   overflow: hidden;
 }
 .progress__fill {
   position: absolute; inset: 0 auto 0 0;
   width: var(--fill, 0%);
-  border-radius: var(--radius-pill);
-  background: linear-gradient(90deg, var(--gold), var(--gold-soft));
-  box-shadow: var(--shadow-gold);
+  border-radius: var(--shape-full);
+  background: var(--primary);
 }
 .progress__times {
   display: flex;
   justify-content: space-between;
-  font-size: var(--fs-tiny);
-  color: var(--faint);
+  font-size: var(--ts-body-sm);
+  color: var(--on-surface-variant);
   font-variant-numeric: tabular-nums;
-  margin-top: -6px;
 }
 
-/* Transport controls: shuffle | prev | play | next | repeat */
 .transport {
   display: flex;
   align-items: center;
@@ -65,83 +557,23 @@
   width: 48px; height: 48px;
   display: grid; place-items: center;
   border-radius: 50%;
-  color: var(--muted);
+  color: var(--on-surface-variant);
   transition: color var(--dur-fast) var(--ease), background-color var(--dur-fast) var(--ease);
 }
-.transport__btn:hover { color: var(--text); background: rgba(255, 255, 255, .06); }
+.transport__btn:hover {
+  color: var(--on-surface);
+  background: color-mix(in srgb, var(--on-surface) var(--state-hover), transparent);
+}
 .transport__btn svg { width: 24px; height: 24px; }
 .transport__btn--play {
   width: 72px; height: 72px;
-  background: linear-gradient(135deg, var(--gold-soft), var(--gold));
-  color: #1a1200;
-  box-shadow: var(--shadow-gold);
-  animation: beamPulse 3s ease-in-out infinite;
+  background: var(--primary);
+  color: var(--on-primary);
+  box-shadow: var(--elevation-2);
 }
 .transport__btn--play svg { width: 32px; height: 32px; }
-.transport__btn[aria-pressed="true"] { color: var(--gold-soft); }
+.transport__btn[aria-pressed="true"] { color: var(--primary); }
 
-/* ---------- Technique panels ----------
-   Each technique gets a left accent border in its signature color. */
-.tech-panel {
-  background: var(--card);
-  border: 1px solid var(--line);
-  border-left: 4px solid var(--accent, var(--gold));
-  border-radius: var(--radius);
-  padding: var(--space-4);
-  box-shadow: var(--shadow-card);
-}
-.tech-panel + .tech-panel { margin-top: var(--space-3); }
-.tech-panel__header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-2);
-  margin-bottom: var(--space-3);
-}
-.tech-panel__name {
-  font-weight: var(--weight-bold);
-  color: var(--accent, var(--gold));
-  font-size: var(--fs-body);
-}
-.tech-panel__desc { font-size: var(--fs-small); color: var(--muted); margin-bottom: var(--space-3); }
-
-.tech-panel--tribeam   { --accent: var(--accent-tribeam); }
-.tech-panel--solar     { --accent: var(--accent-solar); }
-.tech-panel--dodon     { --accent: var(--accent-dodon); }
-.tech-panel--multiform { --accent: var(--accent-multiform); }
-.tech-panel--witches   { --accent: var(--accent-witches); }
-
-/* Active technique: soft wash of the accent color. */
-.tech-panel.is-active {
-  background:
-    linear-gradient(135deg, color-mix(in srgb, var(--accent) 10%, transparent), transparent 70%),
-    var(--card);
-}
-
-/* ---------- Solar stage: full-bleed glow layer ----------
-   Sits behind the Now Playing cover during Solar Flare.
-   --art-hue tints the wash to the track art. */
-.solar-stage {
-  --art-hue: 50;
-  position: relative;
-}
-.solar-stage::before {
-  content: "";
-  position: absolute;
-  inset: -8% -12%;
-  z-index: -1;
-  border-radius: 50%;
-  background:
-    radial-gradient(circle,
-      hsla(var(--art-hue), 100%, 60%, .45),
-      hsla(var(--art-hue), 100%, 50%, .12) 55%,
-      transparent 75%);
-  filter: blur(24px);
-  animation: glowPulse 5s ease-in-out infinite;
-  pointer-events: none;
-}
-
-/* ---------- EQ slider rows ---------- */
 .eq-row {
   display: grid;
   grid-template-columns: 44px 1fr 44px;
@@ -149,108 +581,32 @@
   gap: var(--space-3);
   padding: var(--space-2) 0;
 }
-.eq-row__label { font-size: var(--fs-tiny); color: var(--muted); text-transform: uppercase; letter-spacing: .05em; }
+.eq-row__label { font-size: var(--ts-body-sm); color: var(--on-surface-variant); text-transform: uppercase; letter-spacing: .05em; }
 .eq-row__value {
-  font-size: var(--fs-tiny);
-  color: var(--gold-soft);
+  font-size: var(--ts-body-sm);
+  color: var(--on-primary-container);
   font-variant-numeric: tabular-nums;
   text-align: right;
 }
 
-/* ---------- Dodon Ray timeline markers ----------
-   Markers sit on top of a progress-like track; --pos places each. */
-.timeline {
-  position: relative;
-  height: 40px;
-  margin: var(--space-3) 0;
-}
-.timeline__track {
-  position: absolute; inset: 17px 0 auto 0;
-  height: 6px;
-  border-radius: var(--radius-pill);
-  background: rgba(255, 255, 255, .12);
-}
-.timeline__marker {
-  position: absolute;
-  top: 8px;
-  left: var(--pos, 50%);
-  transform: translateX(-50%);
-  width: 22px; height: 22px;
-  border-radius: 50%;
-  background: var(--electric);
-  border: 3px solid var(--bg);
-  box-shadow: var(--shadow-electric);
-  cursor: pointer;
-}
-.timeline__marker::after {
-  content: attr(data-label);
-  position: absolute;
-  top: 24px; left: 50%;
-  transform: translateX(-50%);
-  font-size: var(--fs-tiny);
-  color: var(--muted);
-  white-space: nowrap;
-}
-.timeline__marker.is-hit { background: var(--gold); }
-
-/* ---------- Onboarding overlay ---------- */
+/* Legacy onboarding overlay blocks — the live onboarding now uses
+   .modal/.modal-card (see components.css); these delegate to it. */
 .onboarding {
   position: fixed; inset: 0;
   z-index: 90;
   display: grid;
   place-items: center;
-  background: rgba(3, 4, 8, .9);
+  background: rgba(4, 5, 9, .6);
   -webkit-backdrop-filter: blur(8px);
   backdrop-filter: blur(8px);
   padding: var(--space-4);
   animation: fadeIn var(--dur-med) var(--ease);
 }
 .onboarding[hidden] { display: none; }
-.onboarding__card {
-  width: 100%;
-  max-width: 420px;
-  background: var(--bg2);
-  border: 1px solid var(--line-strong);
-  border-radius: var(--radius-lg);
-  padding: var(--space-6) var(--space-5);
-  text-align: center;
-  box-shadow: var(--shadow-pop);
-  animation: riseIn var(--dur-med) var(--ease);
-}
 .onboarding__logo { width: 88px; height: 88px; margin: 0 auto var(--space-4); }
-.onboarding__title { font-size: var(--fs-title); font-weight: var(--weight-bold); margin-bottom: var(--space-2); }
-.onboarding__title .tagline { display: block; font-size: var(--fs-small); font-weight: var(--weight-regular); color: var(--gold-soft); margin-top: var(--space-1); }
-.onboarding__text { font-size: var(--fs-small); color: var(--muted); margin-bottom: var(--space-5); }
+.onboarding__title { font-size: var(--ts-title-lg); font-weight: var(--weight-bold); margin-bottom: var(--space-2); }
+.onboarding__title .tagline { display: block; font-size: var(--ts-body-md); font-weight: var(--weight-regular); color: var(--on-primary-container); margin-top: var(--space-1); }
+.onboarding__text { font-size: var(--ts-body-md); color: var(--on-surface-variant); margin-bottom: var(--space-5); }
 .onboarding__dots { display: flex; gap: var(--space-2); justify-content: center; margin: var(--space-4) 0; }
-.onboarding__dot { width: 8px; height: 8px; border-radius: 50%; background: rgba(255, 255, 255, .2); }
-.onboarding__dot.is-current { background: var(--gold); width: 24px; border-radius: var(--radius-pill); }
-
-/* ---------- Source list rows (connect Spotify / Apple / …) ---------- */
-.source-row {
-  display: flex;
-  align-items: center;
-  gap: var(--space-3);
-  padding: var(--space-3) var(--space-4);
-  background: var(--card);
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-}
-.source-row + .source-row { margin-top: var(--space-2); }
-.source-row__icon {
-  width: 40px; height: 40px;
-  border-radius: var(--radius-sm);
-  display: grid; place-items: center;
-  background: color-mix(in srgb, var(--src, var(--local)) 16%, transparent);
-  color: var(--src, var(--local));
-  flex-shrink: 0;
-}
-.source-row__icon svg { width: 22px; height: 22px; }
-.source-row[data-source="spotify"]    { --src: var(--spotify); }
-.source-row[data-source="apple"]      { --src: var(--apple); }
-.source-row[data-source="youtube"]    { --src: var(--youtube); }
-.source-row[data-source="soundcloud"] { --src: var(--soundcloud); }
-.source-row[data-source="local"]      { --src: var(--local); }
-.source-row__meta { flex: 1; min-width: 0; }
-.source-row__name { font-weight: var(--weight-medium); }
-.source-row__status { font-size: var(--fs-small); color: var(--muted); }
-.source-row__status.is-connected { color: #4ade80; }
+.onboarding__dot { width: 8px; height: 8px; border-radius: 50%; background: color-mix(in srgb, var(--on-surface) 22%, transparent); }
+.onboarding__dot.is-current { background: var(--primary); width: 24px; border-radius: var(--shape-full); }

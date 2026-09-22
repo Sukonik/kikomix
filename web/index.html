@@ -3,7 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#06070c">
+  <meta name="theme-color" content="#0e0e12">
+  <meta name="color-scheme" content="dark">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -15,6 +16,8 @@
   <link rel="stylesheet" href="css/base.css">
   <link rel="stylesheet" href="css/components.css">
   <link rel="stylesheet" href="css/features.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/playerbar.css">
 </head>
 <body>
   <noscript>
@@ -77,6 +80,60 @@
       <div id="sources-root"><!-- KM.sources.render() mounts here --></div>
     </section>
   </main>
+
+  <!-- Persistent player bar (rendered by KM.player; hidden until a track is active).
+       Hook IDs owned by the player: #player, #player-expand, #player-art,
+       #player-title, #player-artist, #player-source, #open-provider
+       (content worker: populate its href via KM.player.setProviderUrl(url)),
+       #player-pos, #player-dur, #player-range, #player-vol, #queue-toggle. -->
+  <div id="player" class="player" role="region" aria-label="Now playing bar" hidden>
+    <span class="vh">Simulated playback — no audio is playing.</span>
+    <div class="player__left">
+      <span id="player-art" class="player__art cover" aria-hidden="true"></span>
+      <button type="button" id="player-expand" class="player__expand" aria-label="Expand now playing">
+        <span class="player__title-row">
+          <span id="player-title" class="player__title"></span>
+          <span id="player-source" class="player__source"></span>
+        </span>
+        <span id="player-artist" class="player__artist"></span>
+      </button>
+      <button type="button" class="icon-btn player__like" data-p="like" aria-pressed="false" aria-label="Like this track"></button>
+    </div>
+    <div class="player__center">
+      <div class="player__transport" role="group" aria-label="Playback controls">
+        <button type="button" class="icon-btn" data-p="shuffle" aria-pressed="false" aria-label="Shuffle"></button>
+        <button type="button" class="icon-btn" data-p="prev" aria-label="Previous track"></button>
+        <button type="button" class="icon-btn icon-btn--main" data-p="toggle" aria-label="Play"></button>
+        <button type="button" class="icon-btn" data-p="next" aria-label="Next track"></button>
+        <button type="button" class="icon-btn" data-p="repeat" aria-pressed="false" aria-label="Repeat"></button>
+      </div>
+      <div class="player__seek">
+        <span id="player-pos" class="player__time">0:00</span>
+        <input type="range" id="player-range" class="player__range" min="0" max="100" value="0" step="1" aria-label="Seek">
+        <span id="player-dur" class="player__time">0:00</span>
+      </div>
+    </div>
+    <div class="player__right">
+      <a id="open-provider" class="player__open" href="#" target="_blank" rel="noopener" hidden>Open in provider</a>
+      <button type="button" id="queue-toggle" class="icon-btn" data-p="queue" aria-expanded="false" aria-label="Show queue"></button>
+      <label class="player__vol" title="Volume (simulated)">
+        <span class="vh">Volume (simulated)</span>
+        <input type="range" id="player-vol" min="0" max="100" value="80" step="1" aria-label="Volume (simulated)">
+      </label>
+    </div>
+    <button type="button" class="icon-btn player__toggle-mini" data-p="toggle" aria-label="Play"></button>
+  </div>
+
+  <!-- Up-next queue: bottom sheet on mobile, popover panel on desktop.
+       Rendered by KM.player from the player's own queue model. -->
+  <div id="queue" class="queue" role="dialog" aria-label="Up next queue" hidden>
+    <div class="queue__head">
+      <h3 class="queue__title">Up next</h3>
+      <button type="button" class="icon-btn queue__close" data-p="queue" aria-label="Close queue"></button>
+    </div>
+    <ol class="queue__list"></ol>
+    <p class="queue__sim"><strong>Simulated playback</strong> — no audio is playing.</p>
+  </div>
 
   <!-- LionDavid contextual tip bar (hidden until the lion module shows it) -->
   <div id="lion-tip" class="tip-bar" hidden></div>

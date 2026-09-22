@@ -58,15 +58,16 @@
   }
 
   /* ---------- tips ---------- */
-  // Exact lines from the brief are kept verbatim; the rest are originals
-  // about mixes and playback.
+  // Tips speak free-tier first: "Free" sources open free on the provider
+  // (no subscription needed there), and "Open in provider" takes the
+  // listener to that track's provider search page to hear the real thing.
   var TIPS = [
-    'I found this song on three of your connected services.',
-    'This track is unavailable on your preferred service, but I found it on YouTube.',
+    'I found this free on YouTube and SoundCloud — take your pick.',
+    'This one\'s free on SoundCloud — want me to open it there?',
     'Your mixes can hold songs from every service at once — no app-switching required.',
     'Tap +Mix on any song and I\'ll file it into the mix you choose.',
     'Hit Replay on a mix and I\'ll queue it up, top to bottom.',
-    'See the source badge on a track? That\'s exactly where it\'s playing from.',
+    'See the "Free" badge on a track? That one opens free on the provider — no subscription needed there.',
     'Spotted duplicates in a mix? I\'ll offer to combine them into one entry.',
     'Mimicry lives below your mixes — give it a seed song and I\'ll find its vibe.'
   ];
@@ -98,7 +99,7 @@
         var connected = (t.sources || []).filter(function (s) {
           return !(KM.sources && typeof KM.sources.isConnected === 'function') || KM.sources.isConnected(s) !== false;
         });
-        if (connected.length >= 3) line = 'I found this song on three of your connected services.';
+        if (connected.length >= 3) line = 'I found this song on three of your connected services — the free ones cost you nothing.';
       }
     } catch (e) {}
     if (!line) { line = TIPS[tipIdx % TIPS.length]; tipIdx++; }
@@ -114,11 +115,11 @@
       '<h2>I\'m LionDavid, your musical commander.</h2>' +
       '<p>One search box for all your music. Here\'s the lay of the land:</p>' +
       '<ul class="lion-points">' +
-      '<li><strong>Search all services at once</strong> — one box, every connected source.</li>' +
-      '<li><strong>Mixes route each song to its service</strong> — every track plays from where it lives.</li>' +
+      '<li><strong>Search free sources first</strong> — one box across every connected service.</li>' +
+      '<li><strong>Mixes route each song to its service</strong> — tap "Open in provider" on any track to hear it where it lives; free sources need no subscription.</li>' +
       '<li><strong>Techniques are prototypes</strong> — playful experiments, always honestly labeled.</li>' +
       '</ul>' +
-      '<button class="btn btn-primary" id="km-lion-start">Start listening</button>' +
+      '<button class="btn btn-primary" id="km-lion-start">Explore the demo</button>' +
       '</div>';
     var overlay, usingHost = !!host;
     if (usingHost) {
@@ -149,8 +150,8 @@
       '<div class="lion-card-body">' +
       '<h3 class="section-title">LionDavid</h3>' +
       '<p class="lion-tag">Your musical commander</p>' +
-      '<p>Search every service at once, build mixes that route each song to its home, ' +
-      'and explore playful prototype techniques. I\'ll keep the music flowing — just say the word.</p>' +
+      '<p>Search free sources first, build mixes that route each song to its home, ' +
+      'and explore playful prototype techniques. I\'ll keep your mixes organized — just say the word.</p>' +
       '<button class="btn btn-ghost" id="km-lion-tipbtn">Give me a tip</button>' +
       '</div></div>';
     var b = host.querySelector('#km-lion-tipbtn');

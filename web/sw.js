@@ -1,9 +1,9 @@
 /* KikoMix service worker — offline app shell.
- * Cache name: kikomix-v1. Install caches the shell best-effort (sibling
+ * Cache name: kikomix-v2. Install caches the shell best-effort (sibling
  * agents' files may not exist yet, so individual failures are skipped).
  * Fetch: cache-first for GET same-origin, fallback to network (and cache
  * successful GETs for next time). Activate: delete old caches. */
-var CACHE = 'kikomix-v1';
+var CACHE = 'kikomix-v2';
 
 var SHELL = [
   './',
@@ -13,6 +13,8 @@ var SHELL = [
   'css/base.css',
   'css/components.css',
   'css/features.css',
+  'css/layout.css',
+  'css/playerbar.css',
   'js/data.js',
   'js/adapters.js',
   'js/ui.js',
@@ -20,6 +22,7 @@ var SHELL = [
   'js/player.js',
   'js/library.js',
   'js/mixes.js',
+  'js/sources.js',
   'js/liondavid.js',
   'js/mimicry.js',
   'js/solarflare.js',

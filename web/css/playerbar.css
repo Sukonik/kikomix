@@ -1,0 +1,453 @@
+/* ============================================================
+   KikoMix · Player bar
+   Persistent player shell (#player), up-next queue (#queue), and the
+   full-screen mobile Now Playing sheet (body.np-sheet-open).
+   Vanilla CSS, mobile-first. Loads last, so it wins ties.
+   ============================================================ */
+
+/* Visually-hidden utility (keeps honest labels in the a11y tree). */
+.vh {
+  position: absolute !important;
+  width: 1px; height: 1px;
+  margin: -1px; padding: 0; border: 0;
+  clip: rect(0 0 0 0); clip-path: inset(50%);
+  overflow: hidden; white-space: nowrap;
+}
+
+#player[hidden], #queue[hidden] { display: none !important; }
+
+/* ---------- Shared icon buttons ---------- */
+.player .icon-btn,
+.queue .icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 48px; min-height: 48px;
+  padding: var(--space-2);
+  border-radius: var(--radius-pill);
+  color: var(--text);
+  flex-shrink: 0;
+}
+.player .icon-btn svg,
+.queue .icon-btn svg { width: 24px; height: 24px; }
+.player .icon-btn:hover,
+.queue .icon-btn:hover { background: rgba(255, 255, 255, .08); }
+.player .icon-btn:active,
+.queue .icon-btn:active { background: rgba(255, 255, 255, .14); }
+.player .icon-btn[aria-pressed="true"] { color: var(--gold-soft); }
+.player .icon-btn--main {
+  width: 56px; height: 56px;
+  min-width: 56px; min-height: 56px;
+  background: var(--gold);
+  color: #1a1200;
+}
+.player .icon-btn--main:hover { background: var(--gold-soft); }
+.player .icon-btn--main svg { width: 28px; height: 28px; }
+
+/* ============================================================
+   #player — persistent player shell
+   ============================================================ */
+#player {
+  position: fixed;
+  z-index: 60;
+  background: rgba(18, 20, 29, .96);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  border: 1px solid var(--line-strong);
+  box-shadow: var(--shadow-pop);
+}
+
+/* --- Mini player: mobile (<600px) docked above the bottom nav --- */
+@media (max-width: 599px) {
+  #player {
+    left: var(--space-2); right: var(--space-2);
+    bottom: calc(var(--nav-bar-h) + var(--sab) + var(--space-2));
+    height: var(--mini-h);
+    border-radius: var(--radius-lg);
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-2);
+  }
+}
+
+/* --- Mini player: tablet (600–1024px), mini style, offset past the rail --- */
+@media (min-width: 600px) and (max-width: 1023px) {
+  #player {
+    left: calc(var(--nav-rail-w) + var(--space-3));
+    right: var(--space-3);
+    bottom: calc(var(--sab) + var(--space-3));
+    height: var(--mini-h);
+    border-radius: var(--radius-lg);
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-2);
+  }
+}
+
+/* --- Full bar: desktop (>1024px), Spotify-style 3-cluster grid --- */
+@media (min-width: 1024px) {
+  #player {
+    left: var(--nav-rail-w); right: 0; bottom: 0;
+    height: var(--fullbar-h);
+    border: 0;
+    border-top: 1px solid var(--line-strong);
+    border-radius: 0;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    align-items: center;
+    gap: var(--space-4);
+    padding: var(--space-3) var(--space-5);
+  }
+}
+
+/* Left cluster: artwork + title/artist + like. */
+.player__left {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+  flex: 1 1 auto;
+}
+.player__art {
+  width: 48px; height: 48px;
+  flex-shrink: 0;
+  border-radius: var(--radius-sm);
+}
+@media (min-width: 1024px) {
+  .player__art { width: 56px; height: 56px; }
+  .player__left { grid-column: 1; }
+}
+#player-expand {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 1px;
+  min-height: 48px;
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-sm);
+  text-align: left;
+  cursor: pointer;
+}
+#player-expand:hover { background: rgba(255, 255, 255, .05); }
+.player__title-row {
+  display: flex; align-items: center; gap: var(--space-2);
+  max-width: 100%;
+}
+.player__title {
+  font-size: var(--fs-small);
+  font-weight: var(--weight-medium);
+  color: var(--text);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.player__source .badge { font-size: var(--fs-tiny); }
+.player__artist {
+  font-size: var(--fs-tiny);
+  color: var(--muted);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  max-width: 100%;
+}
+@media (min-width: 1024px) {
+  /* Left cluster becomes its own grid cell on desktop. */
+  .player__left { grid-column: 1; }
+  .player__center { grid-column: 2; }
+  .player__right { grid-column: 3; }
+}
+
+/* Desktop-only clusters are hidden on the mini player. */
+@media (max-width: 1023px) {
+  .player__like,
+  .player__center,
+  .player__right { display: none; }
+}
+@media (min-width: 1024px) {
+  .player__toggle-mini { display: none; }
+  .player__center {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-1);
+    min-width: 320px;
+    max-width: 560px;
+    width: 100%;
+  }
+  .player__transport {
+    display: flex; align-items: center; gap: var(--space-1);
+  }
+  .player__seek {
+    display: flex; align-items: center; gap: var(--space-2);
+    width: 100%;
+  }
+  .player__time {
+    font-size: var(--fs-tiny);
+    color: var(--muted);
+    font-variant-numeric: tabular-nums;
+    min-width: 38px;
+    text-align: center;
+  }
+  .player__right {
+    display: flex; align-items: center; justify-content: flex-end;
+    gap: var(--space-2);
+    min-width: 0;
+  }
+  .player__open {
+    font-size: var(--fs-small);
+    color: var(--gold-soft);
+    white-space: nowrap;
+  }
+  .player__vol { display: inline-flex; align-items: center; }
+}
+
+/* Range inputs: comfortable 48px hit area via padding-free track + tall input. */
+.player__range,
+.player__vol input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 48px;
+  background: transparent;
+  cursor: pointer;
+  min-width: 0;
+}
+.player__range { flex: 1 1 auto; }
+.player__vol input[type="range"] { width: 110px; }
+
+/* Tight desktop widths: drop the volume slider so "Open in provider"
+   never collides with the seek bar in the right cluster. */
+@media (min-width: 1024px) and (max-width: 1280px) {
+  .player__vol { display: none; }
+}
+.player__range::-webkit-slider-runnable-track,
+.player__vol input[type="range"]::-webkit-slider-runnable-track {
+  height: 4px;
+  border-radius: var(--radius-pill);
+  background: linear-gradient(to right,
+    var(--gold) 0%, var(--gold) var(--fill, 0%),
+    rgba(255, 255, 255, .16) var(--fill, 0%), rgba(255, 255, 255, .16) 100%);
+}
+.player__range::-webkit-slider-thumb,
+.player__vol input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 14px; height: 14px;
+  margin-top: -5px;
+  border-radius: 50%;
+  background: var(--text);
+  border: 0;
+}
+.player__range::-moz-range-track,
+.player__vol input[type="range"]::-moz-range-track {
+  height: 4px; border-radius: var(--radius-pill);
+  background: rgba(255, 255, 255, .16);
+}
+.player__range::-moz-range-progress,
+.player__vol input[type="range"]::-moz-range-progress {
+  height: 4px; border-radius: var(--radius-pill); background: var(--gold);
+}
+.player__range::-moz-range-thumb,
+.player__vol input[type="range"]::-moz-range-thumb {
+  width: 14px; height: 14px; border-radius: 50%;
+  background: var(--text); border: 0;
+}
+
+/* ============================================================
+   #queue — up next (bottom sheet on mobile, popover on desktop)
+   ============================================================ */
+#queue {
+  position: fixed;
+  z-index: 90;
+  background: var(--bg2);
+  border: 1px solid var(--line-strong);
+  box-shadow: var(--shadow-pop);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: queueIn var(--dur-med) var(--ease);
+}
+@media (max-width: 599px) {
+  #queue {
+    left: 0; right: 0; bottom: 0;
+    max-height: 72dvh;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    border-bottom: 0;
+    padding-bottom: var(--sab);
+  }
+}
+@media (min-width: 600px) and (max-width: 1023px) {
+  #queue {
+    right: var(--space-3);
+    left: auto;
+    bottom: calc(var(--mini-h) + var(--sab) + var(--space-4));
+    width: min(400px, calc(100vw - var(--nav-rail-w) - var(--space-6)));
+    max-height: 60dvh;
+    border-radius: var(--radius-lg);
+  }
+}
+@media (min-width: 1024px) {
+  #queue {
+    right: var(--space-4);
+    left: auto;
+    bottom: calc(var(--fullbar-h) + var(--sab) + var(--space-3));
+    width: min(400px, 92vw);
+    max-height: 62dvh;
+    border-radius: var(--radius-lg);
+  }
+}
+@keyframes queueIn {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.queue__head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--line);
+  flex-shrink: 0;
+}
+.queue__title { font-size: var(--fs-body); font-weight: var(--weight-medium); }
+.queue__list {
+  overflow-y: auto;
+  padding: var(--space-2);
+}
+.queue__item {
+  display: flex; align-items: center; gap: var(--space-3);
+  width: 100%;
+  min-height: 56px;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-sm);
+  text-align: left;
+}
+.queue__item:hover { background: rgba(255, 255, 255, .05); }
+.queue__item .cover { width: 40px; height: 40px; }
+.queue__item-meta { flex: 1 1 auto; min-width: 0; }
+.queue__item-title {
+  font-size: var(--fs-small); font-weight: var(--weight-medium);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.queue__item-artist {
+  font-size: var(--fs-tiny); color: var(--muted);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.queue__item.current { background: rgba(242, 185, 13, .10); }
+.queue__item.current .queue__item-title { color: var(--gold-soft); }
+.queue__empty {
+  padding: var(--space-6) var(--space-4);
+  text-align: center;
+  color: var(--muted);
+  font-size: var(--fs-small);
+}
+.queue__sim {
+  flex-shrink: 0;
+  padding: var(--space-3) var(--space-4);
+  border-top: 1px solid var(--line);
+  font-size: var(--fs-tiny);
+  color: var(--muted);
+}
+
+/* ============================================================
+   Full-screen Now Playing sheet (mobile only)
+   Tapping the mini-player (or the Playing tab) adds
+   body.np-sheet-open; the chevron collapses back to the
+   previous tab. Desktop keeps the plain tab.
+   ============================================================ */
+.np-collapse { display: none; }
+
+@media (max-width: 599px) {
+  body.np-sheet-open { overflow: hidden; }
+  body.np-sheet-open #tab-nowplaying {
+    position: fixed;
+    inset: 0;
+    z-index: 80;
+    display: block;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    background:
+      radial-gradient(70% 40% at 50% 0%, rgba(242, 185, 13, .10), transparent 70%),
+      var(--bg);
+    padding: calc(var(--sat) + var(--space-4)) var(--space-5)
+             calc(var(--sab) + var(--space-8));
+    animation: sheetUp var(--dur-med) var(--ease);
+  }
+  body.np-sheet-open #tabbar,
+  body.np-sheet-open #player,
+  body.np-sheet-open #lion-tip,
+  body.np-sheet-open #toast { visibility: hidden; }
+  body.np-sheet-open .np-collapse {
+    display: inline-flex;
+    align-items: center; justify-content: center;
+    min-width: 48px; min-height: 48px;
+    margin-bottom: var(--space-2);
+    border-radius: var(--radius-pill);
+    color: var(--muted);
+  }
+  body.np-sheet-open .np-collapse:hover { background: rgba(255, 255, 255, .08); color: var(--text); }
+  body.np-sheet-open .np-collapse svg { width: 28px; height: 28px; }
+
+  /* Sheet-mode Now Playing layout (scoped so the desktop tab
+     keeps whatever features.css provides). */
+  body.np-sheet-open #np-core {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    max-width: 480px;
+    margin: 0 auto;
+  }
+  body.np-sheet-open .np-cover {
+    width: min(78vw, 340px);
+    aspect-ratio: 1;
+    margin: var(--space-2) auto var(--space-5);
+  }
+  body.np-sheet-open .np-title {
+    font-size: var(--fs-hero);
+    font-weight: var(--weight-bold);
+    line-height: var(--lh-tight);
+    text-align: center;
+  }
+  body.np-sheet-open .np-artist {
+    color: var(--muted);
+    font-size: var(--fs-body);
+    text-align: center;
+    margin-bottom: var(--space-2);
+  }
+  body.np-sheet-open .np-badges {
+    display: flex; justify-content: center; gap: var(--space-2);
+    margin-bottom: var(--space-3);
+  }
+  body.np-sheet-open .np-transport {
+    display: flex; align-items: center; justify-content: center;
+    gap: var(--space-5);
+    margin-top: var(--space-4);
+  }
+  body.np-sheet-open .np-transport .tbtn {
+    min-width: 56px; min-height: 56px;
+  }
+  body.np-sheet-open .np-transport .tbtn-main {
+    width: 76px; height: 76px;
+  }
+  body.np-sheet-open .np-progress {
+    margin-top: var(--space-5);
+  }
+}
+@keyframes sheetUp {
+  from { opacity: 0; transform: translateY(32px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* np-core additions owned by the player shell (title row + like button);
+   the features.css owner styles the rest of the np-* set. */
+.np-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+}
+.np-title-row .np-title { flex: 0 1 auto; min-width: 0; }
+.np-like { color: var(--muted); flex-shrink: 0; }
+.np-like:hover { color: var(--text); }
+.np-like[aria-pressed="true"] { color: var(--crimson); }
+
+/* ---------- Reduced motion ---------- */
+@media (prefers-reduced-motion: reduce) {
+  #queue, body.np-sheet-open #tab-nowplaying { animation: none; }
+}

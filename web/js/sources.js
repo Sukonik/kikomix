@@ -4,6 +4,11 @@
  *
  * Mock connections for the MVP: toggles and priority order are stored in
  * localStorage under 'km:sources'. Real OAuth plugs in later.
+ *
+ * FREE-TIER FIRST: the tab leads with a "Free" section (Spotify Free,
+ * YouTube, SoundCloud — no subscription needed) and follows with a
+ * secondary "More" section (Apple Music subscription, local files).
+ * Tier info comes from each adapter's badge/tier/blurb fields.
  */
 (function () {
   'use strict';
@@ -37,10 +42,12 @@
       return { id: id, name: (byId[id] && byId[id].name) || id, color: (byId[id] && byId[id].color) || '#888888' };
     });
   }
+  /** Full adapter record (with free-tier fields) or a safe fallback. */
   function adapterById(id) {
-    var list = adapters();
-    for (var i = 0; i < list.length; i++) if (list[i].id === id) return list[i];
-    return { id: id, name: id, color: '#888888' };
+    var byId = (window.KM_ADAPTERS && window.KM_ADAPTERS.byId) || {};
+    if (byId[id]) return byId[id];
+    return { id: id, name: id, color: '#888888', tagline: TAGLINES[id] || 'Connected service',
+             badge: null, tier: 'more', blurb: '', dimmed: false };
   }
   function load() {
     try {
@@ -87,6 +94,27 @@
     render();
   }
 
+  function sourceRow(id, s) {
+    var a = adapterById(id);
+    var st = s[id] || { connected: true };
+    var tierChip = a.badge
+      ? ' <span class="chip chip-tier">' + esc(a.badge) + '</span>' : '';
+    var blurb = a.blurb
+      ? '<div class="track-sub src-blurb">' + esc(a.blurb) + '</div>' : '';
+    return '<div class="track-row source-row' + (a.dimmed ? ' src-dimmed' : '') +
+      '" data-source="' + esc(id) + '">' +
+      '<span class="source-dot" style="background:' + esc(a.color) + '" aria-hidden="true"></span>' +
+      '<div class="track-meta"><div class="track-title">' + esc(a.name) + tierChip + '</div>' +
+      '<div class="track-sub">' + esc(a.tagline || TAGLINES[id] || 'Connected service') + '</div>' +
+      blurb + '</div>' +
+      '<span class="chip">' + (st.connected ? 'Connected' : 'Off') + '</span>' +
+      '<label class="switch"><input type="checkbox" data-conn="' + esc(id) + '"' +
+      (st.connected ? ' checked' : '') + ' aria-label="Connect ' + esc(a.name) + '"><span></span></label>' +
+      '<button class="btn btn-ghost" data-act="up" data-id="' + esc(id) + '" title="Move up in priority" aria-label="Move ' + esc(a.name) + ' up">↑</button>' +
+      '<button class="btn btn-ghost" data-act="down" data-id="' + esc(id) + '" title="Move down in priority" aria-label="Move ' + esc(a.name) + ' down">↓</button>' +
+      '</div>';
+  }
+
   function render() {
     var root = document.getElementById('sources-root');
     if (!root) return;
@@ -96,23 +124,24 @@
       root._kmSrcWired = true;
     }
     var s = ensure();
-    var ids = priority();
+    // Free-tier first: 'free'-tier adapters lead, subscription/local follow.
+    var freeIds = [], moreIds = [];
+    priority().forEach(function (id) {
+      if (adapterById(id).tier === 'more') moreIds.push(id);
+      else freeIds.push(id);
+    });
     var h = '<h3 class="section-title">Connections</h3>';
-    if (!ids.length) h += '<div class="empty-state">No services registered yet.</div>';
-    h += ids.map(function (id) {
-      var a = adapterById(id);
-      var st = s[id] || { connected: true };
-      return '<div class="track-row source-row" data-source="' + esc(id) + '">' +
-        '<span class="source-dot" style="background:' + esc(a.color) + '" aria-hidden="true"></span>' +
-        '<div class="track-meta"><div class="track-title">' + esc(a.name) + '</div>' +
-        '<div class="track-sub">' + esc(TAGLINES[id] || 'Connected service') + '</div></div>' +
-        '<span class="chip">' + (st.connected ? 'Connected' : 'Off') + '</span>' +
-        '<label class="switch"><input type="checkbox" data-conn="' + esc(id) + '"' +
-        (st.connected ? ' checked' : '') + ' aria-label="Connect ' + esc(a.name) + '"><span></span></label>' +
-        '<button class="btn btn-ghost" data-act="up" data-id="' + esc(id) + '" title="Move up in priority" aria-label="Move ' + esc(a.name) + ' up">↑</button>' +
-        '<button class="btn btn-ghost" data-act="down" data-id="' + esc(id) + '" title="Move down in priority" aria-label="Move ' + esc(a.name) + ' down">↓</button>' +
-        '</div>';
-    }).join('');
+    if (!freeIds.length && !moreIds.length) {
+      h += '<div class="empty-state">No services registered yet.</div>';
+    }
+    h += '<h4 class="section-sub">Free</h4>' +
+      '<p class="track-sub">Play without a subscription — ' +
+      'these sources cost nothing.</p>' +
+      freeIds.map(function (id) { return sourceRow(id, s); }).join('');
+    h += '<h4 class="section-sub">More</h4>' +
+      '<p class="track-sub">Apple Music needs a subscription; ' +
+      'local files are yours.</p>' +
+      moreIds.map(function (id) { return sourceRow(id, s); }).join('');
     h += '<p class="tech-note">Mock connections — real OAuth plugs in later. ' +
       'The order above sets your preferred-service priority for playback.</p>';
     root.innerHTML = h;

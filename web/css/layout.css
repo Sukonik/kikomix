@@ -1,0 +1,259 @@
+/* ============================================================
+   KikoMix · Layout
+   Responsive app shell: content column, M3 navigation that
+   transforms with the viewport, responsive content grids,
+   touch targets, and clearance for the nav + persistent player.
+   Vanilla CSS, mobile-first. Loads after tokens/base/components/
+   features so it is the canonical word on shell geometry.
+   ============================================================ */
+
+:root {
+  --nav-bar-h: 64px;    /* bottom nav height (<600px), content area */
+  --nav-rail-w: 80px;   /* navigation rail width (>=600px) */
+  --mini-h: 64px;       /* mini-player height (<1024px) */
+  --fullbar-h: 88px;    /* full player bar height (>=1024px) */
+  --content-max: 720px;    /* mobile content column */
+  --content-max-md: 960px; /* tablet / small laptop */
+  --content-max-lg: 1240px;/* desktop */
+  --sat: env(safe-area-inset-top, 0px);
+  --sab: env(safe-area-inset-bottom, 0px);
+  --sal: env(safe-area-inset-left, 0px);
+  --sar: env(safe-area-inset-right, 0px);
+}
+
+/* ---------- Content column ---------- */
+#main {
+  width: 100%;
+  max-width: var(--content-max);
+  margin: 0 auto;
+  padding: var(--space-4);
+  padding-top: calc(var(--sat) + var(--space-4));
+  /* Clear the fixed bottom nav. */
+  padding-bottom: calc(var(--nav-bar-h) + var(--sab) + var(--space-6));
+  min-height: 100dvh;
+}
+
+/* When the persistent player is showing, clear it too (per breakpoint height). */
+body.has-player #main {
+  padding-bottom: calc(var(--nav-bar-h) + var(--sab) + var(--mini-h) + var(--space-4));
+}
+
+@media (min-width: 600px) {
+  #main {
+    max-width: var(--content-max-md);
+    margin-left: var(--nav-rail-w);
+    margin-right: auto;
+    padding: var(--space-6);
+    padding-top: calc(var(--sat) + var(--space-6));
+    padding-bottom: var(--space-10);
+  }
+  body.has-player #main {
+    padding-bottom: calc(var(--mini-h) + var(--sab) + var(--space-6));
+  }
+}
+
+@media (min-width: 1024px) {
+  #main {
+    max-width: min(var(--content-max-lg), calc(100% - var(--nav-rail-w)));
+    padding: var(--space-8);
+    padding-top: calc(var(--sat) + var(--space-8));
+    padding-bottom: var(--space-10);
+  }
+  body.has-player #main {
+    padding-bottom: calc(var(--fullbar-h) + var(--sab) + var(--space-6));
+  }
+}
+
+/* ---------- Sections ---------- */
+section.tab { display: none; width: 100%; }
+section.tab.active { display: block; }
+
+/* ---------- Responsive content grids ----------
+   Opt-in grid for card content; mix cards get a real grid with the
+   section heading + new-mix form spanning full width. */
+.km-grid {
+  display: grid;
+  gap: var(--space-4);
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+}
+@media (min-width: 600px) {
+  .km-grid { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); }
+}
+
+#mixes-root {
+  display: grid;
+  gap: var(--space-4);
+  grid-template-columns: 1fr;
+}
+#mixes-root > h3,
+#mixes-root > .mix-new,
+#mixes-root > .empty-state {
+  grid-column: 1 / -1;
+}
+@media (min-width: 600px) {
+  #mixes-root { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
+}
+
+/* Service chips become a tidy grid instead of one long column. */
+#home-services.chips {
+  display: grid;
+  gap: var(--space-2);
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+}
+
+/* ---------- Touch targets (>=48px) ---------- */
+#tabbar > button,
+.player .icon-btn,
+#player-expand,
+.queue__close,
+.queue__item,
+.track-row .btn,
+.chip {
+  min-height: 48px;
+}
+.track-row { min-height: 56px; }
+
+/* ============================================================
+   Navigation — ONE element, CSS-driven transformation
+   <600px: M3 bottom navigation bar (fixed, full width)
+   600px+: M3 navigation rail (fixed left, 80px wide)
+   ============================================================ */
+#tabbar {
+  position: fixed;
+  z-index: 50;
+  display: flex;
+  background: rgba(12, 14, 22, .94);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+}
+
+/* --- Mobile: bottom navigation bar --- */
+@media (max-width: 599px) {
+  #tabbar {
+    left: 0; right: 0; bottom: 0;
+    flex-direction: row;
+    align-items: stretch;
+    border-top: 1px solid var(--line);
+    padding-bottom: var(--sab);
+    padding-left: var(--sal);
+    padding-right: var(--sar);
+  }
+  #tabbar > button {
+    flex: 1 1 0;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    min-height: var(--nav-bar-h);
+    padding: var(--space-2) var(--space-1);
+    color: var(--muted);
+    font-size: var(--fs-tiny);
+    border-radius: var(--radius-sm);
+  }
+}
+
+/* --- Tablet + desktop: navigation rail --- */
+@media (min-width: 600px) {
+  #tabbar {
+    top: 0; left: 0; bottom: 0;
+    width: var(--nav-rail-w);
+    flex-direction: column;
+    align-items: stretch;
+    border-right: 1px solid var(--line);
+    padding-top: calc(var(--sat) + var(--space-3));
+    padding-bottom: calc(var(--sab) + var(--space-3));
+    padding-left: var(--sal);
+    gap: var(--space-1);
+  }
+  #tabbar > button {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    width: 100%;
+    min-height: 64px;
+    padding: var(--space-2) var(--space-1);
+    color: var(--muted);
+    font-size: var(--fs-tiny);
+    border-radius: var(--radius);
+  }
+}
+
+/* --- Shared nav button states --- */
+#tabbar > button svg {
+  width: 24px; height: 24px;
+  flex-shrink: 0;
+}
+#tabbar > button > span {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+#tabbar > button:hover { color: var(--text); background: rgba(255, 255, 255, .05); }
+#tabbar > button.active {
+  color: var(--gold-soft);
+  background: rgba(242, 185, 13, .10);
+}
+#tabbar > button.active svg { animation: beamPulse 2.4s ease-in-out infinite; }
+
+/* ---------- Toast clears nav + player ---------- */
+body.has-player #toast {
+  bottom: calc(var(--nav-bar-h) + var(--sab) + var(--mini-h) + var(--space-4));
+}
+@media (min-width: 600px) {
+  body.has-player #toast {
+    bottom: calc(var(--mini-h) + var(--sab) + var(--space-4));
+    left: calc(50% + var(--nav-rail-w) / 2);
+  }
+}
+@media (min-width: 1024px) {
+  body.has-player #toast {
+    bottom: calc(var(--fullbar-h) + var(--sab) + var(--space-4));
+  }
+}
+
+/* ---------- Reduced motion ---------- */
+@media (prefers-reduced-motion: reduce) {
+  #tabbar > button.active svg { animation: none; }
+}
+
+/* ---------- Narrow phones (<=400px): let row actions wrap ----------
+   Search/mix/source rows carry several actions; wrapping keeps titles
+   readable instead of crushing .track-meta to zero width. */
+@media (max-width: 400px) {
+  .track-row { flex-wrap: wrap; row-gap: var(--space-2); }
+  .track-row .cover { width: 48px; height: 48px; }
+  .track-meta { flex: 1 1 60%; min-width: 0; }
+  .track-actions { flex-wrap: wrap; row-gap: var(--space-2); }
+  .track-actions .btn { padding-inline: var(--space-3); font-size: var(--fs-tiny); }
+}
+
+/* ---------- LionDavid contextual tip: docked above nav/player ----------
+   #lion-tip is a single element reused across tabs; fix it above the
+   navigation (and the player bar when one is active) instead of in-flow. */
+#lion-tip.tip-bar {
+  position: fixed;
+  left: var(--space-4);
+  right: var(--space-4);
+  bottom: calc(var(--nav-bar-h, 64px) + var(--sab) + var(--space-3));
+  z-index: 90;
+  margin-bottom: 0;
+}
+body.has-player #lion-tip.tip-bar {
+  bottom: calc(var(--nav-bar-h, 64px) + var(--mini-h, 64px) + var(--sab) + var(--space-3));
+}
+@media (min-width: 600px) {
+  #lion-tip.tip-bar { left: calc(var(--nav-rail-w, 80px) + var(--space-4)); }
+  body.has-player #lion-tip.tip-bar {
+    bottom: calc(var(--mini-h, 64px) + var(--sab) + var(--space-3));
+  }
+}
+@media (min-width: 1024px) {
+  body.has-player #lion-tip.tip-bar {
+    bottom: calc(var(--fullbar-h, 88px) + var(--sab) + var(--space-3));
+  }
+}

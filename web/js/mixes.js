@@ -188,10 +188,12 @@
   function replayMix(mixId) {
     var m = getMix(mixId);
     if (!m || !m.items.length) { toast('This mix is empty.'); return; }
-    var ids = m.items.map(function (it) { return it.trackId; });
+    // Pass each item's remembered source so the queue keeps per-track
+    // service routing instead of stamping everything with one source.
+    var items = m.items.map(function (it) { return { trackId: it.trackId, sourceId: it.sourceId || null }; });
     try {
-      if (KM.player && typeof KM.player.enqueue === 'function') KM.player.enqueue(ids);
-      if (KM.player && typeof KM.player.play === 'function') KM.player.play(ids[0]);
+      if (KM.player && typeof KM.player.enqueue === 'function') KM.player.enqueue(items);
+      if (KM.player && typeof KM.player.play === 'function') KM.player.play(items[0].trackId, items[0].sourceId);
     } catch (e) {}
     toast('Replaying "' + m.name + '" (simulated)');
     try {
@@ -212,7 +214,7 @@
     var m = getMix(mixId);
     if (!m || !m.items[idx]) return;
     try {
-      if (KM.player && typeof KM.player.play === 'function') KM.player.play(m.items[idx].trackId);
+      if (KM.player && typeof KM.player.play === 'function') KM.player.play(m.items[idx].trackId, m.items[idx].sourceId || null);
     } catch (e) {}
   }
 
@@ -267,7 +269,8 @@
         '<button class="btn btn-primary" data-act="combine" data-mix="' + esc(m.id) + '">Combine</button></div>';
     }
     if (!m.items.length) {
-      h += '<div class="empty-state">Empty mix — add songs from Search or Library.</div>';
+      h += '<div class="empty-state">Empty mix — add songs from Search or Library. ' +
+        'Tracks with a Free badge open free on their provider — no subscription needed there.</div>';
     }
     m.items.forEach(function (it, idx) {
       var t = byId(it.trackId);

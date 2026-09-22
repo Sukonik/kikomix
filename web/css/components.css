@@ -1,145 +1,395 @@
 /* ============================================================
-   KikoMix · Components
-   Reusable UI: buttons, cards, track rows, covers, badges, tab bar,
-   toast, tip bar, switch, range, chips, sections, empty states,
-   modal, notice (simulated/mock disclaimer), select.
+   KikoMix · Components — Material You (M3)
+   Buttons (filled / tonal / outlined / text), icon buttons,
+   chips (assist + filter), cards (elevated / filled / outlined),
+   M3 search bar, Spotify-style list rows, badges, navigation bar,
+   snackbar, switches, sliders, dividers, section headers, modal,
+   notice, form controls. 48px minimum touch targets.
    ============================================================ */
 
-/* ---------- Buttons ---------- */
+/* ---------- Buttons ----------
+   .btn base: 48px pill, label-large type. */
 .btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: var(--space-2);
-  min-height: 48px;              /* touch target */
+  min-height: 48px;
+  min-width: 48px;
   padding: var(--space-3) var(--space-5);
-  border-radius: var(--radius-pill);
-  font-weight: var(--weight-medium);
-  font-size: var(--fs-body);
+  border-radius: var(--shape-full);
+  border: 1px solid transparent;
+  font-size: var(--ts-label-lg);
+  font-weight: var(--weight-semibold);
+  letter-spacing: .01em;
   line-height: 1;
-  transition: transform var(--dur-fast) var(--ease), box-shadow var(--dur-fast) var(--ease),
-              background-color var(--dur-fast) var(--ease);
+  transition: background-color var(--dur-fast) var(--ease),
+              color var(--dur-fast) var(--ease),
+              border-color var(--dur-fast) var(--ease),
+              box-shadow var(--dur-fast) var(--ease);
   user-select: none;
   -webkit-tap-highlight-color: transparent;
 }
-.btn:active { transform: scale(.97); }
+.btn:active { transform: scale(.98); }
+.btn svg { width: 20px; height: 20px; flex-shrink: 0; }
 
+/* Filled button — the primary CTA. */
 .btn-primary {
-  background: linear-gradient(135deg, var(--gold-soft), var(--gold));
-  color: #1a1200;
-  box-shadow: var(--shadow-gold);
+  background: var(--primary);
+  color: var(--on-primary);
+  box-shadow: var(--elevation-1);
 }
-.btn-primary:hover { filter: brightness(1.06); }
-.btn-primary[disabled] { opacity: .45; box-shadow: none; cursor: not-allowed; }
-
-.btn-ghost {
-  background: rgba(255, 255, 255, .06);
-  color: var(--text);
-  border: 1px solid var(--line);
+.btn-primary:hover {
+  background: color-mix(in srgb, var(--on-primary) var(--state-hover), var(--primary));
+  box-shadow: var(--elevation-2);
 }
-.btn-ghost:hover { background: rgba(255, 255, 255, .1); }
+.btn-primary:active {
+  background: color-mix(in srgb, var(--on-primary) var(--state-pressed), var(--primary));
+  box-shadow: var(--elevation-1);
+}
+.btn-primary[disabled] {
+  background: color-mix(in srgb, var(--on-surface) 12%, transparent);
+  color: color-mix(in srgb, var(--on-surface) 38%, transparent);
+  box-shadow: none;
+  cursor: not-allowed;
+  transform: none;
+}
 
+/* Tonal button — soft fill for secondary actions (was .btn-ghost). */
+.btn-ghost,
+.btn-tonal {
+  background: var(--secondary-container);
+  color: var(--on-secondary-container);
+}
+.btn-ghost:hover, .btn-tonal:hover {
+  background: color-mix(in srgb, var(--on-secondary-container) var(--state-hover), var(--secondary-container));
+  box-shadow: var(--elevation-1);
+}
+.btn-ghost:active, .btn-tonal:active {
+  background: color-mix(in srgb, var(--on-secondary-container) var(--state-pressed), var(--secondary-container));
+}
+
+/* Outlined button. */
+.btn-outlined {
+  background: transparent;
+  border-color: var(--outline);
+  color: var(--primary);
+}
+.btn-outlined:hover { background: color-mix(in srgb, var(--primary) var(--state-hover), transparent); }
+.btn-outlined:active { background: color-mix(in srgb, var(--primary) var(--state-pressed), transparent); }
+
+/* Text button. */
+.btn-text {
+  background: transparent;
+  color: var(--primary);
+  padding-inline: var(--space-3);
+}
+.btn-text:hover { background: color-mix(in srgb, var(--primary) var(--state-hover), transparent); }
+.btn-text:active { background: color-mix(in srgb, var(--primary) var(--state-pressed), transparent); }
+
+/* Danger button — M3 error container. */
 .btn-danger {
-  background: rgba(229, 72, 77, .14);
-  color: #ff8f93;
-  border: 1px solid rgba(229, 72, 77, .4);
+  background: var(--error-container);
+  color: var(--on-error-container);
 }
-.btn-danger:hover { background: rgba(229, 72, 77, .22); }
+.btn-danger:hover { background: color-mix(in srgb, var(--on-error-container) var(--state-hover), var(--error-container)); }
+.btn-danger:active { background: color-mix(in srgb, var(--on-error-container) var(--state-pressed), var(--error-container)); }
 
 .btn-block { display: flex; width: 100%; }
-.btn-sm { min-height: 36px; padding: var(--space-2) var(--space-4); font-size: var(--fs-small); }
+.btn-sm { min-height: 40px; padding: var(--space-2) var(--space-4); font-size: var(--ts-label-md); }
 
-/* ---------- Card ---------- */
+/* ---------- Icon buttons (48px) ---------- */
+.icon-btn {
+  display: inline-grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  color: var(--on-surface-variant);
+  transition: background-color var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease);
+  -webkit-tap-highlight-color: transparent;
+}
+.icon-btn:hover {
+  background: color-mix(in srgb, var(--on-surface) var(--state-hover), transparent);
+  color: var(--on-surface);
+}
+.icon-btn:active { background: color-mix(in srgb, var(--on-surface) var(--state-pressed), transparent); }
+.icon-btn svg { width: 24px; height: 24px; }
+.icon-btn--filled { background: var(--primary); color: var(--on-primary); }
+.icon-btn--filled:hover { background: color-mix(in srgb, var(--on-primary) var(--state-hover), var(--primary)); color: var(--on-primary); }
+.icon-btn--tonal { background: var(--secondary-container); color: var(--on-secondary-container); }
+
+/* ---------- Chips ----------
+   Assist chips (static info) + filter chips (toggleable).
+   48px touch target, M3 8px radius. */
+.chips, .chip-row {
+  display: flex;
+  gap: var(--space-2);
+  overflow-x: auto;
+  padding-block: var(--space-1);
+  margin-inline: calc(-1 * var(--space-4));
+  padding-inline: var(--space-4);
+  scrollbar-width: none;
+}
+.chips::-webkit-scrollbar, .chip-row::-webkit-scrollbar { display: none; }
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  flex-shrink: 0;
+  min-height: 48px;
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--shape-sm);
+  border: 1px solid var(--outline-variant);
+  background: transparent;
+  font-size: var(--ts-label-lg);
+  font-weight: var(--weight-medium);
+  color: var(--on-surface-variant);
+  white-space: nowrap;
+  transition: background-color var(--dur-fast) var(--ease),
+              color var(--dur-fast) var(--ease),
+              border-color var(--dur-fast) var(--ease);
+  -webkit-tap-highlight-color: transparent;
+}
+button.chip { cursor: pointer; }
+button.chip:hover {
+  background: color-mix(in srgb, var(--on-surface) var(--state-hover), transparent);
+  color: var(--on-surface);
+  border-color: var(--outline);
+}
+/* Selected filter chip. */
+.chip.active,
+.chip[aria-pressed="true"],
+.chip.selected {
+  background: var(--secondary-container);
+  border-color: transparent;
+  color: var(--on-secondary-container);
+  font-weight: var(--weight-semibold);
+}
+/* Connected-service chip (home services row): gold dot = on. */
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--on-surface-variant);
+  opacity: .6;
+  flex-shrink: 0;
+}
+.chip.on .dot { background: var(--primary); opacity: 1; }
+.chip.on { color: var(--on-surface); border-color: color-mix(in srgb, var(--primary) 35%, transparent); }
+
+/* ---------- Cards ----------
+   .card = M3 elevated. .card--filled / .card--outlined variants. */
 .card {
-  background: var(--card);
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
+  background: var(--surface-container-low);
+  border-radius: var(--shape-lg);
   padding: var(--space-4);
-  box-shadow: var(--shadow-card);
+  box-shadow: var(--elevation-1);
+  border: 1px solid transparent;
 }
 .card + .card { margin-top: var(--space-3); }
-.card--pressable { transition: background-color var(--dur-fast) var(--ease), transform var(--dur-fast) var(--ease); }
-.card--pressable:active { background: var(--card-2); transform: scale(.99); }
+.card--filled {
+  background: var(--surface-container-high);
+  box-shadow: none;
+}
+.card--outlined {
+  background: var(--surface);
+  border-color: var(--outline-variant);
+  box-shadow: none;
+}
+.card--pressable {
+  transition: background-color var(--dur-fast) var(--ease), transform var(--dur-fast) var(--ease);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.card--pressable:hover { background: var(--surface-container); }
+.card--pressable:active { transform: scale(.99); }
 
-/* ---------- Track row ---------- */
+/* ---------- M3 search bar ----------
+   56px tonal pill; the input is borderless, the button docks inside. */
+.search-form {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 56px;
+  background: var(--surface-container-high);
+  border: 1px solid transparent;
+  border-radius: var(--shape-full);
+  padding: var(--space-1) var(--space-1) var(--space-1) var(--space-5);
+  margin-bottom: var(--space-2);
+  transition: background-color var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease);
+}
+.search-form:hover { background: var(--surface-container-highest); }
+.search-form:focus-within {
+  border-color: var(--primary);
+  background: var(--surface-container-highest);
+}
+.search-form input[type="search"] {
+  flex: 1;
+  min-width: 0;
+  min-height: 48px;
+  background: transparent;
+  border: 0;
+  color: var(--on-surface);
+  font-size: var(--ts-body-lg);
+}
+.search-form input[type="search"]:focus { outline: none; }
+.search-form input[type="search"]::placeholder {
+  color: var(--on-surface-variant);
+  opacity: .75;
+}
+.search-form .btn { flex-shrink: 0; }
+
+/* ---------- App header (M3 top app bar) ---------- */
+.app-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  max-width: var(--app-max);
+  margin-inline: auto;
+  padding: var(--space-4) var(--space-4) var(--space-2);
+  padding-top: calc(var(--space-4) + env(safe-area-inset-top, 0px));
+}
+.logo {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--shape-md);
+  flex-shrink: 0;
+}
+.brand { min-width: 0; }
+.wordmark {
+  font-size: var(--ts-title-lg);
+  font-weight: var(--weight-bold);
+  letter-spacing: -.01em;
+  line-height: var(--lh-tight);
+}
+.tagline {
+  font-size: var(--ts-body-md);
+  color: var(--on-surface-variant);
+}
+.noscript {
+  max-width: var(--app-max);
+  margin: var(--space-6) auto;
+  padding: var(--space-4);
+}
+
+/* ---------- Track rows (Spotify clarity) ----------
+   64px rows, 56px rounded artwork, two-line title/artist,
+   right-side actions. */
+.track-list { display: flex; flex-direction: column; gap: 2px; }
+
 .track-row {
   display: flex;
   align-items: center;
   gap: var(--space-3);
-  padding: var(--space-2);
-  border-radius: var(--radius-sm);
   min-height: 64px;
+  padding: var(--space-2);
+  border-radius: var(--shape-md);
   transition: background-color var(--dur-fast) var(--ease);
+  -webkit-tap-highlight-color: transparent;
 }
-.track-row:hover { background: rgba(255, 255, 255, .04); }
-.track-row:active { background: rgba(255, 255, 255, .07); }
-.track-row__meta { flex: 1; min-width: 0; }
-.track-row__title {
+.track-row:hover { background: color-mix(in srgb, var(--on-surface) var(--state-hover), transparent); }
+.track-row:active { background: color-mix(in srgb, var(--on-surface) var(--state-pressed), transparent); }
+.track-row-sm { min-height: 56px; }
+
+.track-row__meta, .track-meta {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.track-row__title, .track-title {
+  font-size: var(--ts-body-lg);
   font-weight: var(--weight-medium);
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  color: var(--on-surface);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
-.track-row__artist {
-  font-size: var(--fs-small); color: var(--muted);
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+.track-row__artist, .track-artist, .track-sub {
+  font-size: var(--ts-body-md);
+  color: var(--on-surface-variant);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .track-row__badge { flex-shrink: 0; }
+.track-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-shrink: 0;
+}
 
-/* ---------- Cover: gradient art block ----------
-   --hue shifts the art per-track when set inline. */
+/* ---------- Cover art ----------
+   Tonal gradient keyed to --hue; soft sheen, no neon. */
 .cover {
   --hue: 42;
-  width: 56px; height: 56px; flex-shrink: 0;
-  border-radius: var(--radius-sm);
+  width: 56px;
+  height: 56px;
+  flex-shrink: 0;
+  border-radius: var(--shape-md);
   background:
     linear-gradient(135deg,
-      hsl(var(--hue), 90%, 55%),
-      hsl(calc(var(--hue) + 48), 80%, 38%));
+      hsl(var(--hue), 42%, 34%),
+      hsl(calc(var(--hue) + 40), 38%, 22%));
   position: relative;
   overflow: hidden;
 }
-/* Fake sheen + waveform etching so covers read as audio art. */
 .cover::before {
   content: "";
-  position: absolute; inset: 0;
-  background: radial-gradient(circle at 30% 20%, rgba(255, 255, 255, .35), transparent 55%);
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 30% 20%, rgba(255, 255, 255, .16), transparent 55%);
 }
 .cover::after {
   content: "";
-  position: absolute; inset: 0;
-  opacity: .5;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='56'%3E%3Cg stroke='rgba(0,0,0,.45)' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='M10 28v0M18 20v16M26 12v32M34 18v20M42 24v8'/%3E%3C/g%3E%3C/svg%3E");
+  position: absolute;
+  inset: 0;
+  opacity: .35;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='56'%3E%3Cg stroke='rgba(0,0,0,.4)' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='M10 28v0M18 20v16M26 12v32M34 18v20M42 24v8'/%3E%3C/g%3E%3C/svg%3E");
 }
-.cover--lg { width: 100%; aspect-ratio: 1; border-radius: var(--radius-lg); }
+.cover-sm { width: 48px; height: 48px; }
+.cover-lg, .cover--lg {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1;
+  border-radius: var(--shape-xl);
+}
 
-/* ---------- Badge ---------- */
+/* ---------- Badges ---------- */
 .badge {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  font-size: var(--fs-tiny);
-  font-weight: var(--weight-medium);
-  padding: 3px 8px;
-  border-radius: var(--radius-pill);
-  background: rgba(255, 255, 255, .08);
-  color: var(--text);
-  border: 1px solid var(--line);
+  font-size: var(--ts-label-sm);
+  font-weight: var(--weight-semibold);
+  letter-spacing: .04em;
+  padding: 4px 8px;
+  border-radius: var(--shape-sm);
+  background: var(--surface-container-highest);
+  color: var(--on-surface-variant);
+  border: 1px solid var(--outline-variant);
   white-space: nowrap;
 }
-.badge[data-source="spotify"]    { color: #4ade80; border-color: rgba(29, 185, 84, .45); background: rgba(29, 185, 84, .12); }
-.badge[data-source="apple"]      { color: #ff8f9c; border-color: rgba(250, 45, 72, .45); background: rgba(250, 45, 72, .12); }
-.badge[data-source="youtube"]    { color: #ff7b7b; border-color: rgba(255, 0, 0, .45);   background: rgba(255, 0, 0, .12); }
-.badge[data-source="soundcloud"] { color: #ffa76b; border-color: rgba(255, 85, 0, .45);  background: rgba(255, 85, 0, .12); }
-.badge[data-source="local"]      { color: #c9b3ff; border-color: rgba(167, 139, 250, .45); background: rgba(167, 139, 250, .12); }
+.badge[data-source="spotify"]    { color: #7de2a3; border-color: color-mix(in srgb, var(--spotify) 45%, transparent);    background: color-mix(in srgb, var(--spotify) 14%, transparent); }
+.badge[data-source="apple"]      { color: #ff9aa6; border-color: color-mix(in srgb, var(--apple) 45%, transparent);      background: color-mix(in srgb, var(--apple) 14%, transparent); }
+.badge[data-source="youtube"]    { color: #ff8a8a; border-color: color-mix(in srgb, var(--youtube) 45%, transparent);    background: color-mix(in srgb, var(--youtube) 14%, transparent); }
+.badge[data-source="soundcloud"] { color: #ffb287; border-color: color-mix(in srgb, var(--soundcloud) 45%, transparent); background: color-mix(in srgb, var(--soundcloud) 14%, transparent); }
+.badge[data-source="local"]      { color: #cdbcfb; border-color: color-mix(in srgb, var(--local) 45%, transparent);      background: color-mix(in srgb, var(--local) 14%, transparent); }
 
-/* ---------- Tab bar (fixed bottom, 6 items) ---------- */
-.tabbar {
+/* ---------- Navigation bar (M3, fixed bottom) ----------
+   80px bar, 6 destinations, active-indicator pill. */
+#tabbar, .tabbar {
   position: fixed;
   inset: auto 0 0 0;
   z-index: 50;
-  background: rgba(12, 14, 22, .92);
-  -webkit-backdrop-filter: blur(12px);
-  backdrop-filter: blur(12px);
-  border-top: 1px solid var(--line);
+  background: var(--surface-container);
+  border-top: 1px solid var(--outline-variant);
   padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 .tabbar__inner {
@@ -147,243 +397,428 @@
   grid-template-columns: repeat(6, 1fr);
   max-width: var(--app-max);
   margin-inline: auto;
-  height: var(--tabbar-height);
+  min-height: var(--tabbar-height);
 }
-.tab {
-  display: none;
+#tabbar {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  max-width: var(--app-max);
+  margin-inline: auto;
+}
+#tabbar [data-tab], .tab {
+  display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 2px;
-  color: var(--muted);
-  font-size: var(--fs-tiny);
-  min-height: var(--tabbar-height);
+  gap: 4px;
+  min-height: 64px;
+  padding: var(--space-2) 0 var(--space-3);
+  color: var(--on-surface-variant);
+  font-size: var(--ts-label-md);
+  font-weight: var(--weight-medium);
   -webkit-tap-highlight-color: transparent;
+  transition: color var(--dur-fast) var(--ease);
 }
-.tab.active { display: flex; color: var(--gold-soft); }
-.tab svg { width: 22px; height: 22px; }
-.tab.active svg { animation: beamPulse 2.4s ease-in-out infinite; }
-.tab:active { background: rgba(255, 255, 255, .05); }
+#tabbar [data-tab] svg, .tab svg {
+  width: 24px;
+  height: 24px;
+  /* M3 active-indicator pill: 56×32 via content-box padding. */
+  padding: 4px 16px;
+  box-sizing: content-box;
+  border-radius: var(--shape-full);
+  transition: background-color var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease);
+}
+#tabbar [data-tab]:hover, .tab:hover {
+  color: var(--on-surface);
+}
+#tabbar [data-tab].active, .tab.active {
+  color: var(--primary);
+}
+#tabbar [data-tab].active svg, .tab.active svg {
+  background: color-mix(in srgb, var(--primary) 22%, transparent);
+}
+#tabbar [data-tab]:active, .tab:active {
+  background: color-mix(in srgb, var(--on-surface) var(--state-pressed), transparent);
+}
 
-/* ---------- Toast ---------- */
+/* ---------- Snackbar / toast (M3) ----------
+   Inverse-surface container; visibility is driven by .show. */
 .toast {
   position: fixed;
   left: 50%;
-  bottom: calc(var(--tabbar-height) + env(safe-area-inset-bottom, 0px) + var(--space-4));
-  transform: translateX(-50%);
+  bottom: calc(var(--nav-bar-h, 64px) + env(safe-area-inset-bottom, 0px) + var(--space-4));
+  transform: translate(-50%, 8px);
   z-index: 100;
+  display: flex;
+  align-items: center;
   max-width: min(92vw, 480px);
-  background: var(--card-2);
-  border: 1px solid var(--line-strong);
-  border-radius: var(--radius-pill);
+  min-height: 48px;
+  background: #ece5d3; /* M3 inverse surface (dark theme) */
+  color: #201a08;
+  border-radius: var(--shape-sm);
   padding: var(--space-3) var(--space-4);
-  font-size: var(--fs-small);
-  box-shadow: var(--shadow-pop);
-  animation: riseIn var(--dur-med) var(--ease);
+  font-size: var(--ts-body-md);
+  box-shadow: var(--elevation-3);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--dur-med) var(--ease), transform var(--dur-med) var(--ease);
+}
+.toast.show {
+  opacity: 1;
+  transform: translate(-50%, 0);
+  pointer-events: auto;
 }
 .toast[hidden] { display: none; }
 
 /* ---------- Tip bar (LionDavid tip, dismissible) ---------- */
 .tip-bar {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: var(--space-3);
-  background: linear-gradient(135deg, rgba(242, 185, 13, .12), rgba(242, 185, 13, .04));
-  border: 1px solid rgba(242, 185, 13, .35);
-  border-radius: var(--radius);
-  padding: var(--space-3) var(--space-4);
+  background: var(--surface-container-high);
+  border: 1px solid var(--outline-variant);
+  border-left: 3px solid var(--primary);
+  border-radius: var(--shape-md);
+  padding: var(--space-2) var(--space-2) var(--space-2) var(--space-4);
   margin-bottom: var(--space-4);
 }
 .tip-bar[hidden] { display: none; }
+.lion-tip-msg {
+  flex: 1;
+  min-width: 0;
+  font-size: var(--ts-body-md);
+  color: var(--on-surface);
+}
+.lion-tip-x {
+  display: inline-grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  color: var(--on-surface-variant);
+  font-size: 1.25rem;
+  line-height: 1;
+  transition: background-color var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease);
+}
+.lion-tip-x:hover {
+  background: color-mix(in srgb, var(--on-surface) var(--state-hover), transparent);
+  color: var(--on-surface);
+}
+/* Legacy tip-bar children (kept working). */
 .tip-bar__mark {
   flex-shrink: 0;
-  width: 36px; height: 36px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
-  display: grid; place-items: center;
-  background: radial-gradient(circle at 35% 30%, var(--gold-soft), var(--gold) 70%);
-  color: #1a1200;
+  display: grid;
+  place-items: center;
+  background: var(--primary);
+  color: var(--on-primary);
   font-weight: var(--weight-bold);
 }
-.tip-bar__text { flex: 1; font-size: var(--fs-small); }
-.tip-bar__text strong { color: var(--gold-soft); }
-.tip-bar__dismiss { color: var(--muted); font-size: 1.125rem; line-height: 1; padding: var(--space-1); }
-.tip-bar__dismiss:hover { color: var(--text); }
+.tip-bar__text { flex: 1; font-size: var(--ts-body-md); }
+.tip-bar__text strong { color: var(--on-primary-container); }
+.tip-bar__dismiss { color: var(--on-surface-variant); font-size: 1.125rem; line-height: 1; padding: var(--space-1); }
+.tip-bar__dismiss:hover { color: var(--on-surface); }
 
-/* ---------- Switch (toggle) ---------- */
+/* ---------- Switch (M3) ----------
+   DOM: <label class="switch"><input type="checkbox"><span></span></label>
+   Track 52×32; thumb 16px off / 24px on. Label is a 48px touch target. */
 .switch {
   position: relative;
-  display: inline-block;
-  width: 52px; height: 30px;
+  display: inline-flex;
+  align-items: center;
+  min-height: 48px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.switch input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  margin: 0;
+  cursor: pointer;
+}
+.switch > span {
+  position: relative;
+  width: 52px;
+  height: 32px;
   flex-shrink: 0;
+  border-radius: var(--shape-full);
+  background: var(--surface-container-highest);
+  border: 1px solid var(--outline);
+  transition: background-color var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease);
 }
-.switch input { position: absolute; opacity: 0; inset: 0; cursor: pointer; }
-.switch__track {
-  position: absolute; inset: 0;
-  border-radius: var(--radius-pill);
-  background: rgba(255, 255, 255, .14);
-  border: 1px solid var(--line);
-  transition: background-color var(--dur-fast) var(--ease);
-}
-.switch__thumb {
-  position: absolute; top: 3px; left: 3px;
-  width: 22px; height: 22px;
+.switch > span::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 8px;
+  width: 16px;
+  height: 16px;
   border-radius: 50%;
-  background: var(--text);
-  transition: transform var(--dur-fast) var(--ease);
+  background: var(--outline);
+  transform: translateY(-50%);
+  transition: left var(--dur-fast) var(--ease), width var(--dur-fast) var(--ease),
+              height var(--dur-fast) var(--ease), background-color var(--dur-fast) var(--ease);
 }
-.switch input:checked + .switch__track { background: var(--gold); border-color: var(--gold); }
-.switch input:checked + .switch__track .switch__thumb { transform: translateX(22px); background: #1a1200; }
-.switch input:focus-visible + .switch__track { outline: 2px solid var(--gold); outline-offset: 2px; }
+.switch input:checked + span {
+  background: var(--primary);
+  border-color: var(--primary);
+}
+.switch input:checked + span::after {
+  left: calc(100% - 32px);
+  width: 24px;
+  height: 24px;
+  background: var(--on-primary);
+}
+.switch input:hover + span::after {
+  box-shadow: 0 0 0 8px color-mix(in srgb, var(--on-surface) var(--state-hover), transparent);
+}
+.switch input:checked:hover + span::after {
+  box-shadow: 0 0 0 8px color-mix(in srgb, var(--primary) var(--state-hover), transparent);
+}
+.switch input:focus-visible + span {
+  outline: 2px solid var(--primary);
+  outline-offset: 3px;
+}
+.switch input:disabled + span { opacity: .4; }
 
-/* ---------- Range input ---------- */
+/* ---------- Range slider (M3) ----------
+   4px track, gold active fill via --fill, 20px thumb. 48px touch height. */
 input[type="range"] {
   -webkit-appearance: none;
   appearance: none;
   width: 100%;
-  height: 32px;
+  height: 48px;
   background: transparent;
+  cursor: pointer;
 }
 input[type="range"]::-webkit-slider-runnable-track {
-  height: 6px;
-  border-radius: var(--radius-pill);
-  background: linear-gradient(to right, var(--gold) var(--fill, 50%), rgba(255, 255, 255, .14) var(--fill, 50%));
+  height: 4px;
+  border-radius: var(--shape-full);
+  background: linear-gradient(to right,
+    var(--primary) var(--fill, 50%),
+    var(--surface-container-highest) var(--fill, 50%));
 }
 input[type="range"]::-webkit-slider-thumb {
   -webkit-appearance: none;
-  width: 22px; height: 22px;
+  width: 20px;
+  height: 20px;
   margin-top: -8px;
   border-radius: 50%;
-  background: var(--text);
-  border: 3px solid var(--gold);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, .5);
+  background: var(--primary);
+  border: none;
+  box-shadow: var(--elevation-1);
+  transition: box-shadow var(--dur-fast) var(--ease);
+}
+input[type="range"]:hover::-webkit-slider-thumb,
+input[type="range"]:focus-visible::-webkit-slider-thumb {
+  box-shadow: 0 0 0 10px color-mix(in srgb, var(--primary) var(--state-hover), transparent);
 }
 input[type="range"]::-moz-range-track {
-  height: 6px; border-radius: var(--radius-pill);
-  background: rgba(255, 255, 255, .14);
+  height: 4px;
+  border-radius: var(--shape-full);
+  background: var(--surface-container-highest);
 }
 input[type="range"]::-moz-range-progress {
-  height: 6px; border-radius: var(--radius-pill); background: var(--gold);
+  height: 4px;
+  border-radius: var(--shape-full);
+  background: var(--primary);
 }
 input[type="range"]::-moz-range-thumb {
-  width: 16px; height: 16px; border-radius: 50%;
-  background: var(--text); border: 3px solid var(--gold);
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--primary);
+  border: none;
+  box-shadow: var(--elevation-1);
 }
 
-/* ---------- Chip ---------- */
-.chip {
-  display: inline-flex;
+/* ---------- Switch / slider rows ----------
+   56px M3 list-row rhythm: label left, control right. */
+.switch-row, .slider-row {
+  display: flex;
   align-items: center;
-  padding: var(--space-2) var(--space-3);
-  border-radius: var(--radius-pill);
-  border: 1px solid var(--line);
-  background: rgba(255, 255, 255, .05);
-  font-size: var(--fs-small);
-  color: var(--muted);
-  transition: all var(--dur-fast) var(--ease);
+  gap: var(--space-4);
+  min-height: 56px;
+  padding-block: var(--space-2);
 }
-.chip[aria-pressed="true"], .chip.selected {
-  color: #1a1200;
-  background: var(--gold);
-  border-color: var(--gold);
-  font-weight: var(--weight-medium);
+.switch-row > span:first-child,
+.slider-row > span:first-child {
+  flex: 1;
+  min-width: 0;
+  font-size: var(--ts-body-lg);
+  color: var(--on-surface);
+}
+.slider-row input[type="range"] { flex: 1; min-width: 0; }
+.slider-row output {
+  min-width: 44px;
+  text-align: right;
+  font-size: var(--ts-body-md);
+  color: var(--on-surface-variant);
+  font-variant-numeric: tabular-nums;
 }
 
-/* ---------- Section title ---------- */
+/* ---------- Section headers (Spotify generosity) ----------
+   Title-large, generous 32/16 whitespace — no more cramped caps. */
 .section-title {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   justify-content: space-between;
-  gap: var(--space-2);
-  margin: var(--space-6) 0 var(--space-3);
-  font-size: var(--fs-small);
+  gap: var(--space-3);
+  margin: var(--space-8) 0 var(--space-4);
+  font-size: var(--ts-title-lg);
   font-weight: var(--weight-bold);
-  text-transform: uppercase;
-  letter-spacing: .08em;
-  color: var(--muted);
+  letter-spacing: -.01em;
+  line-height: 1.25;
+  color: var(--on-surface);
 }
 .section-title:first-child { margin-top: 0; }
 
-/* ---------- Empty state ---------- */
+/* ---------- Empty states ---------- */
 .empty-state {
   text-align: center;
   padding: var(--space-10) var(--space-4);
-  color: var(--muted);
+  color: var(--on-surface-variant);
 }
 .empty-state__art {
   font-size: 2.5rem;
   margin-bottom: var(--space-3);
   opacity: .6;
 }
-.empty-state p { font-size: var(--fs-small); max-width: 32ch; margin: var(--space-2) auto 0; }
+.empty-state p {
+  font-size: var(--ts-body-md);
+  max-width: 36ch;
+  margin: var(--space-2) auto 0;
+}
+.empty {
+  padding: var(--space-4) 0;
+  font-size: var(--ts-body-md);
+  color: var(--on-surface-variant);
+}
+.hint {
+  font-size: var(--ts-body-md);
+  color: var(--on-surface-variant);
+  opacity: .8;
+}
+.status {
+  min-height: 1.5em;
+  margin: var(--space-2) 0;
+  font-size: var(--ts-body-md);
+  color: var(--on-surface-variant);
+}
 
-/* ---------- Modal ---------- */
-.modal-overlay {
-  position: fixed; inset: 0;
+/* ---------- Modal (M3 dialog, bottom-sheet on mobile) ----------
+   DOM: <div class="modal show"><div class="modal-card card">… */
+.modal, .modal-overlay {
+  position: fixed;
+  inset: 0;
   z-index: 80;
-  background: rgba(3, 4, 8, .72);
-  -webkit-backdrop-filter: blur(4px);
-  backdrop-filter: blur(4px);
-  display: grid;
+  display: none;
   place-items: end center;
+  background: rgba(4, 5, 9, .6);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
   animation: fadeIn var(--dur-med) var(--ease);
 }
+.modal.show { display: grid; }
 .modal-overlay[hidden] { display: none; }
-.modal {
+.modal-card, .onboarding__card {
   width: 100%;
-  max-width: var(--app-max);
+  max-width: 560px;
   max-height: 88dvh;
   overflow-y: auto;
-  background: var(--bg2);
-  border: 1px solid var(--line-strong);
-  border-bottom: 0;
-  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
-  padding: var(--space-5) var(--space-4) calc(var(--space-6) + env(safe-area-inset-bottom, 0px));
-  box-shadow: var(--shadow-pop);
-  animation: riseIn var(--dur-med) var(--ease);
+  background: var(--surface-container-high);
+  color: var(--on-surface);
+  border: 1px solid transparent;
+  border-radius: var(--shape-xl) var(--shape-xl) 0 0;
+  padding: var(--space-6) var(--space-5) calc(var(--space-6) + env(safe-area-inset-bottom, 0px));
+  box-shadow: var(--elevation-3);
+}
+.modal.show .modal-card { animation: riseIn var(--dur-med) var(--ease); }
+.modal-card .section-title { margin-top: 0; }
+.modal-actions, .modal__actions {
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-top: var(--space-5);
 }
 .modal__handle {
-  width: 40px; height: 4px;
-  border-radius: var(--radius-pill);
-  background: rgba(255, 255, 255, .2);
+  width: 40px;
+  height: 4px;
+  border-radius: var(--shape-full);
+  background: color-mix(in srgb, var(--on-surface) 22%, transparent);
   margin: 0 auto var(--space-4);
+}
+@media (min-width: 600px) {
+  .modal, .modal-overlay { place-items: center; padding: var(--space-6); }
+  .modal-card, .onboarding__card {
+    border-radius: var(--shape-xl);
+    max-width: 480px;
+  }
 }
 
 /* ---------- Notice: honest simulated/mock disclaimer ----------
-   Gold-bordered banner used wherever the app shows demo or
-   placeholder data. Never hide it. */
+   Tonal gold container. Never hide it. */
 .notice {
-  border: 1px solid rgba(242, 185, 13, .55);
-  border-left: 4px solid var(--gold);
-  background: rgba(242, 185, 13, .07);
-  border-radius: var(--radius-sm);
-  padding: var(--space-3) var(--space-4);
-  font-size: var(--fs-small);
-  color: var(--gold-soft);
+  border: 1px solid color-mix(in srgb, var(--primary) 40%, transparent);
+  background: color-mix(in srgb, var(--primary) 8%, transparent);
+  border-radius: var(--shape-md);
+  padding: var(--space-4);
+  font-size: var(--ts-body-md);
+  color: var(--on-primary-container);
   margin-bottom: var(--space-4);
 }
-.notice strong { color: var(--gold); }
+.notice strong { color: var(--on-primary-container); }
 .notice p + p { margin-top: var(--space-2); }
+/* Duplicate-mix warning variant — inherits .notice; hook kept for JS. */
+.dup-notice { }
 
-/* ---------- Select ---------- */
+/* ---------- Form controls (M3 filled fields) ----------
+   Note: input:not([type]) covers bare <input> elements, which
+   default to the text state but don't match [type="text"]. */
+select,
+input[type="text"],
+input:not([type]) {
+  width: 100%;
+  min-height: 56px;
+  appearance: none;
+  -webkit-appearance: none;
+  background: var(--surface-container-highest);
+  border: 1px solid var(--outline-variant);
+  border-radius: var(--shape-md);
+  padding: var(--space-3) var(--space-4);
+  color: var(--on-surface);
+  font-size: var(--ts-body-lg);
+  transition: border-color var(--dur-fast) var(--ease), background-color var(--dur-fast) var(--ease);
+}
+select:hover,
+input[type="text"]:hover,
+input:not([type]):hover { border-color: var(--outline); }
+select:focus,
+input[type="text"]:focus,
+input:not([type]):focus {
+  border-color: var(--primary);
+  outline: none;
+}
 .select-wrap { position: relative; }
 .select-wrap::after {
   content: "▾";
   position: absolute;
-  right: var(--space-3);
+  right: var(--space-4);
   top: 50%;
   transform: translateY(-50%);
-  color: var(--muted);
+  color: var(--on-surface-variant);
   pointer-events: none;
 }
-select {
-  width: 100%;
-  appearance: none;
-  -webkit-appearance: none;
-  background: var(--card);
-  border: 1px solid var(--line);
-  border-radius: var(--radius-sm);
-  padding: var(--space-3) var(--space-10) var(--space-3) var(--space-3);
-  min-height: 48px;
-  color: var(--text);
+.select-wrap select { padding-right: var(--space-10); }
+
+/* ---------- Dividers ---------- */
+.divider, hr {
+  border: 0;
+  border-top: 1px solid var(--outline-variant);
+  margin-block: var(--space-4);
 }
-select:hover { border-color: var(--line-strong); }

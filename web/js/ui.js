@@ -29,6 +29,17 @@
   function showTab(name) {
     if (TABS.indexOf(name) === -1) name = 'home';
 
+    // Leaving the full-screen Now Playing sheet: drop sheet mode first so
+    // the normal tab chrome (nav, player bar) comes back.
+    var sheetWasOpen = false;
+    try {
+      sheetWasOpen = document.body.classList.contains('np-sheet-open');
+      if (sheetWasOpen && name !== 'nowplaying') {
+        document.body.classList.remove('np-sheet-open');
+        _returnTab = null;
+      }
+    } catch (e) { /* sheet never opened; carry on */ }
+
     var sections = document.querySelectorAll('main .tab');
     for (var i = 0; i < sections.length; i++) {
       sections[i].classList.toggle('active', sections[i].id === 'tab-' + name);
@@ -42,6 +53,16 @@
     }
 
     if ((location.hash || '').slice(1) !== name) location.hash = name;
+
+    // Tapping the Playing tab on a small screen with an active track
+    // presents Now Playing as a full-screen sheet instead of a plain tab.
+    if (name === 'nowplaying' && !_expanding && !sheetWasOpen) {
+      var hasTrack = false;
+      try { hasTrack = !!(window.KM.player && window.KM.player.state.trackId != null); } catch (e) {}
+      var small = false;
+      try { small = window.matchMedia && window.matchMedia('(max-width: 599px)').matches; } catch (e) {}
+      if (hasTrack && small) { expandNowPlaying(); return; }
+    }
 
     var modKey = ONSHOW[name];
     try {
@@ -78,6 +99,43 @@
     return '<span class="badge" data-source="' + esc(sourceId) + '">' + esc(name) + '</span>';
   }
 
+  /** Full-screen Now Playing sheet (mobile).
+   *  expandNowPlaying() remembers the current tab, switches to the Playing
+   *  tab, and adds body.np-sheet-open (CSS turns #tab-nowplaying into a
+   *  full-screen sheet below 600px; elsewhere it is a plain tab).
+   *  collapseNowPlaying() reverses it, returning to the previous tab.
+   *  Dispatches km:playerexpand / km:playercollapse on document. */
+  var _returnTab = null;
+  var _expanding = false;
+
+  function expandNowPlaying() {
+    if (_expanding) return;
+    _expanding = true;
+    try {
+      var before = (location.hash || '').slice(1);
+      if (before && before !== 'nowplaying' && TABS.indexOf(before) !== -1) _returnTab = before;
+      else if (!before) _returnTab = 'home';
+      document.body.classList.add('np-sheet-open');
+      if ((location.hash || '').slice(1) !== 'nowplaying') showTab('nowplaying');
+      document.dispatchEvent(new CustomEvent('km:playerexpand', { detail: { tab: 'nowplaying' } }));
+    } catch (e) { /* sheet state best-effort */ }
+    _expanding = false;
+  }
+
+  function collapseNowPlaying() {
+    try {
+      document.body.classList.remove('np-sheet-open');
+      document.dispatchEvent(new CustomEvent('km:playercollapse', {}));
+    } catch (e) {}
+    var target = _returnTab && TABS.indexOf(_returnTab) !== -1 ? _returnTab : 'home';
+    _returnTab = null;
+    if ((location.hash || '').slice(1) !== target) showTab(target);
+  }
+
+  function isSheetOpen() {
+    try { return document.body.classList.contains('np-sheet-open'); } catch (e) { return false; }
+  }
+
   var toastTimer = null;
   /** Show a transient message in #toast. Safe if the element is missing. */
   function toast(msg) {
@@ -89,5 +147,13 @@
     toastTimer = setTimeout(function () { el.classList.remove('show'); }, 2600);
   }
 
-  window.KM.ui = { showTab: showTab, toast: toast, esc: esc, badge: badge };
+  window.KM.ui = {
+    showTab: showTab,
+    toast: toast,
+    esc: esc,
+    badge: badge,
+    expandNowPlaying: expandNowPlaying,
+    collapseNowPlaying: collapseNowPlaying,
+    isSheetOpen: isSheetOpen
+  };
 })();
