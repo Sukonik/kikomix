@@ -3,6 +3,9 @@
 The responsive website and installable PWA for KikoMix ("Project TriBeam").
 **Vanilla HTML/CSS/JS only. Zero dependencies, no build step.**
 
+**Live demo:** https://sukonik.github.io/kikomix/ (auto-deployed from `main`
+via the GitHub Pages workflow)
+
 ## Run locally
 
 ```bash
