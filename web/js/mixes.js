@@ -301,7 +301,17 @@
       '<form class="mix-new" id="km-mix-new">' +
       '<input name="name" placeholder="New mix name…" maxlength="60" aria-label="New mix name">' +
       '<button class="btn btn-primary" type="submit">New mix</button></form>';
-    if (!mixes.length) h += '<div class="empty-state">No mixes yet — create one above, or tap +Mix on any song.</div>';
+    if (!mixes.length) {
+      try {
+        if (KM.brand && typeof KM.brand.emptyHTML === 'function') {
+          h += KM.brand.emptyHTML('No mixes yet', 'Create one above, or tap +Mix on any song.');
+        } else {
+          h += '<div class="empty-state">No mixes yet — create one above, or tap +Mix on any song.</div>';
+        }
+      } catch (e) {
+        h += '<div class="empty-state">No mixes yet — create one above, or tap +Mix on any song.</div>';
+      }
+    }
     mixes.forEach(function (m) { h += mixCard(m); });
     h += '<div id="mimicry-root"></div>';
     root.innerHTML = h;

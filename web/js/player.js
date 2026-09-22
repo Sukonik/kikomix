@@ -519,7 +519,10 @@
     var esc = window.KM.ui.esc;
     var track = resolveTrack(state.trackId);
     if (!track) {
-      root.innerHTML = '<div class="np-empty"><p>Nothing playing yet.</p>' +
+      root.innerHTML = '<div class="np-empty">' +
+        '<img class="np-empty__art" src="icons/dark/icon-192.png" data-brand-slot ' +
+        'alt="KikoMix app icon — brand variant artwork">' +
+        '<p>Nothing playing yet.</p>' +
         '<p class="hint">Search or browse, then press Play. Playback here is simulated.</p></div>';
       return;
     }

@@ -255,9 +255,16 @@
     });
     container._kmRows = new Map(list.map(function (r) { return [r.key, r]; }));
     if (!list.length) {
-      container.innerHTML = '<p class="empty">' +
-        (q ? 'No results for &ldquo;' + esc(q) + '&rdquo;. ' : 'No results. ') +
-        'Try another title or artist. (Mock data)</p>';
+      var noTitle = 'No results';
+      var noCopy = (q ? 'No results for \u201C' + q + '\u201D. ' : '') +
+        'Try another title or artist. (Mock data)';
+      try {
+        if (window.KM && window.KM.brand && typeof window.KM.brand.emptyHTML === 'function') {
+          container.innerHTML = window.KM.brand.emptyHTML(noTitle, noCopy);
+          return;
+        }
+      } catch (e) {}
+      container.innerHTML = '<p class="empty">' + esc(noCopy) + '</p>';
       return;
     }
     container.innerHTML = list.map(rowHTML).join('');

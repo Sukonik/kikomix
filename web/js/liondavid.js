@@ -82,7 +82,8 @@
       if (document.body.firstChild) document.body.insertBefore(bar, document.body.firstChild);
       else document.body.appendChild(bar);
     }
-    bar.innerHTML = '<span class="lion-tip-msg">' + esc(text) + '</span>' +
+    bar.innerHTML = '<img class="tip-bar__bust" src="assets/brand/character-bust.jpg" alt="">' +
+      '<span class="lion-tip-msg">' + esc(text) + '</span>' +
       '<button class="lion-tip-x" aria-label="Dismiss">×</button>';
     bar.style.display = 'flex';
     var x = bar.querySelector('.lion-tip-x');

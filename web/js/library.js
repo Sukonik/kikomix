@@ -43,6 +43,18 @@
   }
   function hueOf(t) { return (t && typeof t.hue === 'number') ? t.hue : 210; }
 
+  /** Empty state with the KikoMix character artwork; falls back to plain
+      text if the brand module failed to load. */
+  function emptyBrand(title, copy) {
+    try {
+      if (KM.brand && typeof KM.brand.emptyHTML === 'function') {
+        return KM.brand.emptyHTML(title, copy);
+      }
+    } catch (e) {}
+    return '<div class="empty-state">' + esc(title) +
+      (copy ? ' — ' + esc(copy) : '') + '</div>';
+  }
+
   function trackRow(t) {
     var firstSource = ((t.sources || [])[0]) || 'local';
     var sub = esc(t.artist || 'Unknown artist');
@@ -60,12 +72,12 @@
 
   /* ---------- derived views ---------- */
   function songsHTML(ts) {
-    if (!ts.length) return '<div class="empty-state">No songs yet — the mock catalog hasn\'t loaded.</div>';
+    if (!ts.length) return emptyBrand('No songs yet', 'The mock catalog hasn\'t loaded.');
     return ts.map(trackRow).join('');
   }
 
   function artistsHTML(ts) {
-    if (!ts.length) return '<div class="empty-state">No artists yet.</div>';
+    if (!ts.length) return emptyBrand('No artists yet', '');
     var map = {};
     ts.forEach(function (t) {
       var name = t.artist || 'Unknown artist';
@@ -86,7 +98,7 @@
   }
 
   function albumsHTML(ts) {
-    if (!ts.length) return '<div class="empty-state">No albums yet.</div>';
+    if (!ts.length) return emptyBrand('No albums yet', '');
     var map = {};
     ts.forEach(function (t) {
       var album = t.album || 'Unknown album';

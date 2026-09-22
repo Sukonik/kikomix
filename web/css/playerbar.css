@@ -86,7 +86,10 @@
   }
 }
 
-/* --- Full bar: desktop (>1024px), Spotify-style 3-cluster grid --- */
+/* --- Full bar: desktop (>1024px), Spotify-style 3-cluster grid ---
+   Two grid rows: the transport row defines the vertical center line and
+   the seek row hangs below it, so the side clusters align with the
+   transport controls instead of the taller column's midpoint. */
 @media (min-width: 1024px) {
   #player {
     left: var(--nav-rail-w); right: 0; bottom: 0;
@@ -96,10 +99,18 @@
     border-radius: 0;
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    grid-template-rows: auto auto;
     align-items: center;
+    align-content: center;
     gap: var(--space-4);
+    row-gap: var(--space-1);
     padding: var(--space-3) var(--space-5);
   }
+  /* Slim the desktop sliders: the 48px hit area is for touch layouts
+     (which never render these rows); a mouse gets a 24px row so the
+     bar's content fits inside its height instead of clipping. */
+  .player__range,
+  .player__vol input[type="range"] { height: 24px; }
 }
 
 /* Left cluster: artwork + title/artist + like. */
@@ -120,7 +131,10 @@
   .player__left { grid-column: 1; }
 }
 #player-expand {
-  flex: 1 1 auto;
+  /* Shrink-wraps the track text (it still ellipsizes via min-width: 0)
+     so the like button docks right beside the title/artist instead of
+     being pushed to the far edge of the left cell. */
+  flex: 0 1 auto;
   min-width: 0;
   display: flex;
   flex-direction: column;
@@ -152,10 +166,23 @@
   max-width: 100%;
 }
 @media (min-width: 1024px) {
-  /* Left cluster becomes its own grid cell on desktop. */
-  .player__left { grid-column: 1; }
+  /* Desktop placement: the side clusters sit on the transport row so
+     they share its vertical center; the center column spans both rows
+     via subgrid, keeping its min/max-width column sizing. */
+  .player__left { grid-column: 1; grid-row: 1; align-self: center; }
   .player__center { grid-column: 2; }
-  .player__right { grid-column: 3; }
+  .player__right { grid-column: 3; grid-row: 1; align-self: center; }
+  @supports (grid-template-rows: subgrid) {
+    .player__center {
+      display: grid;
+      grid-template-rows: subgrid;
+      grid-row: 1 / span 2;
+      gap: 0;
+      justify-items: center;
+    }
+    .player__transport { grid-row: 1; }
+    .player__seek { grid-row: 2; width: 100%; }
+  }
 }
 
 /* Desktop-only clusters are hidden on the mini player. */

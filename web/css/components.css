@@ -169,7 +169,7 @@ button.chip:hover {
   color: var(--on-secondary-container);
   font-weight: var(--weight-semibold);
 }
-/* Connected-service chip (home services row): gold dot = on. */
+/* Connected-service chip (home services row): orange dot = on. */
 .dot {
   width: 8px;
   height: 8px;
@@ -209,11 +209,15 @@ button.chip:hover {
 .card--pressable:active { transform: scale(.99); }
 
 /* ---------- M3 search bar ----------
-   56px tonal pill; the input is borderless, the button docks inside. */
+   56px tonal pill; the input is borderless, the button docks inside.
+   Capped well below the content column so the field (and the input's
+   native clear button) never stretches edge-to-edge on desktop. */
 .search-form {
   display: flex;
   align-items: center;
   gap: var(--space-2);
+  width: 100%;
+  max-width: 640px;
   min-height: 56px;
   background: var(--surface-container-high);
   border: 1px solid transparent;
@@ -254,10 +258,11 @@ button.chip:hover {
   padding-top: calc(var(--space-4) + env(safe-area-inset-top, 0px));
 }
 .logo {
-  width: 44px;
   height: 44px;
+  width: auto;               /* primary mark is not square — never stretch it */
   border-radius: var(--shape-md);
   flex-shrink: 0;
+  background: #000;          /* mark's own black field blends into the dark theme */
 }
 .brand { min-width: 0; }
 .wordmark {
@@ -275,6 +280,39 @@ button.chip:hover {
   margin: var(--space-6) auto;
   padding: var(--space-4);
 }
+
+/* ---------- Brand wiring (assets/brand/) ----------
+   logo-primary.jpg + logotype.jpg sit only on black/very-dark surfaces.
+   Never stretched (auto on one axis), never recolored, never gradiented.
+   Generous clear space around the marks. */
+
+/* Hero lockup on the home tab: primary mark over the wordmark. */
+.brand-hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-8) var(--space-4);
+}
+.brand-hero__mark { height: 96px; width: auto; }
+.brand-hero__wordmark { width: min(260px, 70%); height: auto; }
+
+/* Credits footer at the end of the page. */
+.app-credits {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  max-width: var(--app-max);
+  margin-inline: auto;
+  padding: var(--space-8) var(--space-4);
+  background: var(--surface-container-lowest);
+  border-top: 1px solid var(--line);
+  text-align: center;
+}
+.app-credits__mark { height: 40px; width: auto; }
+.app-credits__wordmark { width: 120px; height: auto; }
+.app-credits__text { font-size: var(--ts-body-sm); color: var(--on-surface-variant); }
 
 /* ---------- Track rows (Spotify clarity) ----------
    64px rows, 56px rounded artwork, two-line title/artist,
@@ -383,14 +421,29 @@ button.chip:hover {
 .badge[data-source="local"]      { color: #cdbcfb; border-color: color-mix(in srgb, var(--local) 45%, transparent);      background: color-mix(in srgb, var(--local) 14%, transparent); }
 
 /* ---------- Navigation bar (M3, fixed bottom) ----------
-   80px bar, 6 destinations, active-indicator pill. */
+   80px bar, 6 destinations, active-indicator pill.
+   Bottom-bar GEOMETRY lives only below 600px: layout.css is the single
+   source of truth for #tabbar geometry at >=600px (navigation rail), so
+   nothing here may set inset/right/max-width or auto margins outside
+   the mobile media query. */
 #tabbar, .tabbar {
   position: fixed;
-  inset: auto 0 0 0;
   z-index: 50;
   background: var(--surface-container);
   border-top: 1px solid var(--outline-variant);
   padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+/* --- Mobile (<600px): bottom-bar geometry --- */
+@media (max-width: 599px) {
+  #tabbar, .tabbar {
+    inset: auto 0 0 0;
+  }
+  #tabbar {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    max-width: var(--app-max);
+    margin-inline: auto;
+  }
 }
 .tabbar__inner {
   display: grid;
@@ -399,12 +452,8 @@ button.chip:hover {
   margin-inline: auto;
   min-height: var(--tabbar-height);
 }
-#tabbar {
-  display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  max-width: var(--app-max);
-  margin-inline: auto;
-}
+/* (Desktop #tabbar geometry is owned by layout.css; the mobile
+   bottom-bar geometry lives in the <600px media query above.) */
 #tabbar [data-tab], .tab {
   display: flex;
   flex-direction: column;
@@ -586,7 +635,7 @@ button.chip:hover {
 .switch input:disabled + span { opacity: .4; }
 
 /* ---------- Range slider (M3) ----------
-   4px track, gold active fill via --fill, 20px thumb. 48px touch height. */
+   4px track, orange active fill via --fill, 20px thumb. 48px touch height. */
 input[type="range"] {
   -webkit-appearance: none;
   appearance: none;
@@ -762,7 +811,7 @@ input[type="range"]::-moz-range-thumb {
 }
 
 /* ---------- Notice: honest simulated/mock disclaimer ----------
-   Tonal gold container. Never hide it. */
+   Tonal orange container. Never hide it. */
 .notice {
   border: 1px solid color-mix(in srgb, var(--primary) 40%, transparent);
   background: color-mix(in srgb, var(--primary) 8%, transparent);
@@ -774,8 +823,16 @@ input[type="range"]::-moz-range-thumb {
 }
 .notice strong { color: var(--on-primary-container); }
 .notice p + p { margin-top: var(--space-2); }
-/* Duplicate-mix warning variant — inherits .notice; hook kept for JS. */
-.dup-notice { }
+/* Duplicate-mix warning variant — inherits .notice; hook kept for JS.
+   Wraps the Combine button below the text in narrow mix-card columns
+   instead of letting it overflow the card. */
+.dup-notice {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2) var(--space-3);
+}
+.dup-notice .btn { flex-shrink: 0; }
 
 /* ---------- Form controls (M3 filled fields) ----------
    Note: input:not([type]) covers bare <input> elements, which
@@ -821,4 +878,290 @@ input:not([type]):focus {
   border: 0;
   border-top: 1px solid var(--outline-variant);
   margin-block: var(--space-4);
+}
+
+/* ---------- Brand ----------
+   In-app brand system (web/assets/brand/BRAND.md).
+   Marks sit on black/dark only; the --brand-accent variable tints
+   chrome AROUND the artwork (rings, glows, selected states) — the
+   artwork itself is never stretched, recolored, or gradient-washed. */
+
+/* Home hero: character-full.jpg as the welcome moment, integrated into the
+   existing .brand-hero lockup (primary mark + logotype, owned above).
+   The artwork keeps its natural aspect (never stretched) on black. */
+.brand-hero__character {
+  display: block;
+  width: auto;
+  max-width: 100%;
+  height: auto;
+  max-height: 380px;
+  border-radius: var(--shape-lg);
+  border: 1px solid var(--outline-variant);
+  background: #000; /* the mark's own surface */
+}
+.brand-hero__welcome {
+  display: flex;
+  gap: var(--space-3);
+  align-items: flex-start;
+  max-width: 560px;
+  text-align: left;
+}
+.brand-hero__badge {
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  border-radius: var(--shape-md);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--brand-accent) 50%, transparent),
+              0 0 16px color-mix(in srgb, var(--brand-accent) 30%, transparent);
+}
+.brand-hero__title {
+  font-size: var(--ts-title-lg);
+  font-weight: var(--weight-bold);
+  letter-spacing: -.01em;
+  color: var(--on-surface);
+}
+.brand-hero__copy {
+  margin-top: var(--space-1);
+  font-size: var(--ts-body-md);
+  color: var(--on-surface-variant);
+}
+
+/* Section header mark (small, round, tasteful). */
+.section-mark {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* Shared empty-state artwork (Library / Mixes / Search). */
+.brand-empty__art {
+  display: block;
+  width: min(240px, 62%);
+  height: auto;
+  margin: 0 auto var(--space-4);
+  border-radius: var(--shape-lg);
+  border: 1px solid var(--outline-variant);
+  background: #000;
+}
+.brand-empty__title {
+  font-size: var(--ts-title-md);
+  font-weight: var(--weight-semibold);
+  color: var(--on-surface);
+}
+
+/* Now Playing placeholder artwork (nothing playing yet). */
+.np-empty__art {
+  display: block;
+  width: min(200px, 52%);
+  height: auto;
+  margin: 0 auto var(--space-4);
+  border-radius: var(--shape-xl);
+  border: 1px solid var(--outline-variant);
+  background: #000;
+  box-shadow: var(--elevation-2);
+}
+
+/* LionDavid tip-bar bust mark. */
+.tip-bar__bust {
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  border-radius: 50%;
+}
+
+/* Brand picker tiles (radio-style). */
+.brand-note {
+  font-size: var(--ts-body-md);
+  color: var(--on-surface-variant);
+  margin-bottom: var(--space-2);
+  max-width: 60ch;
+}
+.brand-tiles {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-3);
+  margin-bottom: var(--space-2);
+}
+.brand-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1);
+  min-height: 48px;
+  padding: var(--space-3) var(--space-2);
+  border-radius: var(--shape-lg);
+  border: 1px solid var(--outline-variant);
+  background: var(--surface-container-low);
+  color: var(--on-surface);
+  cursor: pointer;
+  transition: border-color var(--dur-fast) var(--ease),
+              box-shadow var(--dur-fast) var(--ease),
+              background-color var(--dur-fast) var(--ease);
+  -webkit-tap-highlight-color: transparent;
+}
+.brand-tile img {
+  width: 56px;
+  height: 56px;
+  border-radius: var(--shape-md);
+}
+.brand-tile__label {
+  font-size: var(--ts-label-lg);
+  font-weight: var(--weight-semibold);
+}
+.brand-tile__note {
+  font-size: var(--ts-label-sm);
+  color: var(--on-surface-variant);
+}
+.brand-tile:hover { border-color: var(--outline); }
+.brand-tile[aria-checked="true"] {
+  border-color: var(--brand-accent);
+  box-shadow: 0 0 0 1px var(--brand-accent),
+              0 0 14px color-mix(in srgb, var(--brand-accent) 35%, transparent);
+  background: color-mix(in srgb, var(--brand-accent) 8%, var(--surface-container-low));
+}
+.brand-tile:focus-visible {
+  outline: 2px solid var(--brand-accent);
+  outline-offset: 2px;
+}
+
+/* Brand accent swatches (radio-style). */
+.brand-swatches {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+.brand-swatch {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-height: 56px;
+  padding: var(--space-2) var(--space-4) var(--space-2) var(--space-2);
+  border-radius: var(--shape-full);
+  border: 1px solid var(--outline-variant);
+  background: var(--surface-container-low);
+  color: var(--on-surface);
+  cursor: pointer;
+  transition: border-color var(--dur-fast) var(--ease),
+              box-shadow var(--dur-fast) var(--ease);
+  -webkit-tap-highlight-color: transparent;
+}
+.brand-swatch__dot {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--sw, var(--brand-accent));
+  flex-shrink: 0;
+}
+.brand-swatch__meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+}
+.brand-swatch__label {
+  font-size: var(--ts-label-lg);
+  font-weight: var(--weight-semibold);
+}
+.brand-swatch__note {
+  font-size: var(--ts-label-sm);
+  color: var(--on-surface-variant);
+}
+.brand-swatch:hover { border-color: var(--outline); }
+.brand-swatch[aria-checked="true"] {
+  border-color: var(--sw, var(--brand-accent));
+  box-shadow: 0 0 0 1px var(--sw, var(--brand-accent));
+}
+.brand-swatch:focus-visible {
+  outline: 2px solid var(--on-surface);
+  outline-offset: 2px;
+}
+
+/* ---------- Brand icon gallery (GitHub-style variant picker) ----------
+   Rows load from icons/variants/manifest.json at runtime. The selected
+   row gets the brand-accent ring/glow; the accent tints chrome only,
+   never the artwork itself. */
+.brand-gallery {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+.brand-sheet {
+  border: 1px solid var(--outline-variant);
+  border-radius: var(--shape-lg);
+  overflow: hidden;
+  background: #000;
+}
+.brand-sheet img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.brand-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-height: 64px;
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--outline-variant);
+  border-radius: var(--shape-lg);
+  background: var(--surface-container-low);
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+  width: 100%;
+}
+.brand-row__thumb {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--shape-md);
+  flex-shrink: 0;
+  background: #000;
+}
+.brand-row__meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  flex: 1;
+}
+.brand-row__name {
+  font-size: var(--ts-label-lg);
+  font-weight: var(--weight-semibold);
+}
+.brand-row__desc {
+  font-size: var(--ts-label-sm);
+  color: var(--on-surface-variant);
+}
+.brand-row__check {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 1px solid var(--outline);
+  color: transparent;
+  flex-shrink: 0;
+}
+.brand-row:hover { border-color: var(--outline); }
+.brand-row[aria-checked="true"] {
+  border-color: var(--brand-accent);
+  box-shadow: 0 0 0 1px var(--brand-accent),
+              0 0 14px color-mix(in srgb, var(--brand-accent) 35%, transparent);
+  background: color-mix(in srgb, var(--brand-accent) 8%, var(--surface-container-low));
+}
+.brand-row[aria-checked="true"] .brand-row__check {
+  border-color: var(--brand-accent);
+  background: var(--brand-accent);
+  color: #000;
+}
+.brand-row:focus-visible {
+  outline: 2px solid var(--brand-accent);
+  outline-offset: 2px;
+}
+.brand-gallery__note {
+  font-size: var(--ts-label-sm);
+  color: var(--on-surface-variant);
+  padding: var(--space-2) var(--space-1) 0;
 }

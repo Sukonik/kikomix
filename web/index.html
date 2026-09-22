@@ -10,8 +10,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <title>KikoMix — Focus Every Sound</title>
   <link rel="manifest" href="manifest.json">
-  <link rel="icon" type="image/svg+xml" href="icons/logo.svg">
-  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="icons/dark/favicon-32.png">
+  <link rel="apple-touch-icon" href="icons/dark/apple-touch-icon.png">
   <link rel="stylesheet" href="css/tokens.css">
   <link rel="stylesheet" href="css/base.css">
   <link rel="stylesheet" href="css/components.css">
@@ -29,7 +29,7 @@
   </noscript>
 
   <header class="app-header">
-    <img src="icons/logo.svg" alt="KikoMix logo" class="logo" width="44" height="44">
+    <img src="assets/brand/logo-primary.jpg" alt="KikoMix primary mark" class="logo" width="53" height="44">
     <div class="brand">
       <div class="wordmark">KikoMix</div>
       <div class="tagline">Focus Every Sound</div>
@@ -39,6 +39,25 @@
   <main id="main">
     <!-- HOME -->
     <section class="tab" id="tab-home" role="tabpanel" aria-label="Home">
+      <!-- Brand hero: primary mark + logotype lockup (assets/brand). -->
+      <section class="brand-hero" aria-label="KikoMix brand">
+        <img src="assets/brand/logo-primary.jpg" alt="KikoMix primary mark"
+             class="brand-hero__mark" width="120" height="100">
+        <img src="assets/brand/logotype.jpg" alt="KikoMix wordmark"
+             class="brand-hero__wordmark" width="260" height="65">
+        <img src="assets/brand/character-full.jpg" class="brand-hero__character"
+             alt="KikoMix character — a martial-arts figure in a white gi with orange accents and a halo ring, hands forming the triangle-waveform gesture">
+        <div class="brand-hero__welcome">
+          <img class="brand-hero__badge" src="icons/dark/icon-192.png" alt="KikoMix app icon"
+               width="40" height="40" data-brand-slot>
+          <div>
+            <h2 class="brand-hero__title">Welcome to KikoMix</h2>
+            <p class="brand-hero__copy">One search across every connected service — free
+            sources first. Playback in this demo is simulated; open any track in its
+            provider to hear the real thing.</p>
+          </div>
+        </div>
+      </section>
       <div id="home-lion" class="card"><!-- LionDavid intro card mounts here --></div>
       <h2 class="section-title">Recently played</h2>
       <div id="home-recent" class="track-list"></div>
@@ -80,6 +99,15 @@
       <div id="sources-root"><!-- KM.sources.render() mounts here --></div>
     </section>
   </main>
+
+  <!-- Brand credits: marks on a near-black surface, never stretched. -->
+  <footer class="app-credits" aria-label="About KikoMix">
+    <img src="assets/brand/logo-primary.jpg" alt="" aria-hidden="true"
+         class="app-credits__mark" width="48" height="40">
+    <img src="assets/brand/logotype.jpg" alt="KikoMix"
+         class="app-credits__wordmark" width="120" height="30">
+    <p class="app-credits__text">Focus Every Sound · brand board supplied by Nathan, 2026</p>
+  </footer>
 
   <!-- Persistent player bar (rendered by KM.player; hidden until a track is active).
        Hook IDs owned by the player: #player, #player-expand, #player-art,
@@ -179,6 +207,7 @@
   <script src="js/library.js"></script>
   <script src="js/mixes.js"></script>
   <script src="js/liondavid.js"></script>
+  <script src="js/brand.js"></script>
   <script src="js/sources.js"></script>
   <script src="js/mimicry.js"></script>
   <script src="js/solarflare.js"></script>

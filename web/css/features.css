@@ -20,6 +20,12 @@
 .np-empty p + p { margin-top: var(--space-2); }
 
 .np-cover {
+  /* Decorative artwork panel: full-width square on phones (via
+     .cover-lg), but capped on larger screens so the title, progress,
+     and transport controls stay above the fold. The 52vh cap bounds
+     the height too, since the panel keeps its 1:1 aspect ratio. */
+  width: min(100%, 420px, 52vh);
+  margin-inline: auto;
   margin-bottom: var(--space-4);
   box-shadow: var(--elevation-2);
 }
@@ -108,7 +114,7 @@
   margin-top: 2px;
 }
 
-/* Transport: icon buttons + a gold FAB-style play button. */
+/* Transport: icon buttons + an orange FAB-style play button. */
 .np-transport {
   display: flex;
   align-items: center;

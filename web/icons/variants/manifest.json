@@ -1,0 +1,98 @@
+[
+  {
+    "name": "Midnight",
+    "slug": "midnight",
+    "file": "midnight-512.png",
+    "thumb": "midnight-192.png",
+    "description": "The primary mark, as-is: white hands and orange waveform on black.",
+    "primary": true
+  },
+  {
+    "name": "Ember",
+    "slug": "ember",
+    "file": "ember-512.png",
+    "thumb": "ember-192.png",
+    "description": "Orange tile with an all-white mark.",
+    "primary": false
+  },
+  {
+    "name": "Tide",
+    "slug": "tide",
+    "file": "tide-512.png",
+    "thumb": "tide-192.png",
+    "description": "Bright blue tile with an all-white mark.",
+    "primary": false
+  },
+  {
+    "name": "Ghost",
+    "slug": "ghost",
+    "file": "ghost-512.png",
+    "thumb": "ghost-192.png",
+    "description": "Inverted: white tile, black hands, orange waveform.",
+    "primary": false
+  },
+  {
+    "name": "Matte",
+    "slug": "matte",
+    "file": "matte-512.png",
+    "thumb": "matte-192.png",
+    "description": "Intentionally subtle: near-black tile with dim gray hands and waveform.",
+    "primary": false
+  },
+  {
+    "name": "Solarwave",
+    "slug": "solarwave",
+    "file": "solarwave-512.png",
+    "thumb": "solarwave-192.png",
+    "description": "Sunset-gradient tile with a black mark silhouette.",
+    "primary": false
+  },
+  {
+    "name": "Neon",
+    "slug": "neon",
+    "file": "neon-512.png",
+    "thumb": "neon-192.png",
+    "description": "Deep navy tile with glowing cyan hands and a magenta-orange waveform.",
+    "primary": false
+  },
+  {
+    "name": "Holo",
+    "slug": "holo",
+    "file": "holo-512.png",
+    "thumb": "holo-192.png",
+    "description": "Pastel holographic-gradient tile with a white mark.",
+    "primary": false
+  },
+  {
+    "name": "Prism",
+    "slug": "prism",
+    "file": "prism-512.png",
+    "thumb": "prism-192.png",
+    "description": "Rainbow-stripe tile with a white mark.",
+    "primary": false
+  },
+  {
+    "name": "Ruby",
+    "slug": "ruby",
+    "file": "ruby-512.png",
+    "thumb": "ruby-192.png",
+    "description": "Crimson tile with a white mark.",
+    "primary": false
+  },
+  {
+    "name": "Leaf",
+    "slug": "leaf",
+    "file": "leaf-512.png",
+    "thumb": "leaf-192.png",
+    "description": "Forest-green tile with a white mark.",
+    "primary": false
+  },
+  {
+    "name": "Master",
+    "slug": "master",
+    "file": "master-512.png",
+    "thumb": "master-192.png",
+    "description": "The character bust portrait, cropped into the icon tile.",
+    "primary": false
+  }
+]

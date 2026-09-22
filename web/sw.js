@@ -1,9 +1,9 @@
 /* KikoMix service worker — offline app shell.
- * Cache name: kikomix-v2. Install caches the shell best-effort (sibling
+ * Cache name: kikomix-v3. Install caches the shell best-effort (sibling
  * agents' files may not exist yet, so individual failures are skipped).
  * Fetch: cache-first for GET same-origin, fallback to network (and cache
  * successful GETs for next time). Activate: delete old caches. */
-var CACHE = 'kikomix-v2';
+var CACHE = 'kikomix-v3';
 
 var SHELL = [
   './',
@@ -28,10 +28,14 @@ var SHELL = [
   'js/solarflare.js',
   'js/techniques.js',
   'js/app.js',
-  'icons/logo.svg',
-  'icons/icon-192.png',
-  'icons/icon-512.png',
-  'icons/apple-touch-icon.png'
+  'js/brand.js',
+  'assets/brand/logo-primary.jpg',
+  'assets/brand/logotype.jpg',
+  'icons/dark/icon-192.png',
+  'icons/dark/icon-512.png',
+  'icons/dark/icon-maskable-512.png',
+  'icons/dark/favicon-32.png',
+  'icons/dark/apple-touch-icon.png'
 ];
 
 self.addEventListener('install', function (event) {

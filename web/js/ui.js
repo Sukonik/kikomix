@@ -156,4 +156,20 @@
     collapseNowPlaying: collapseNowPlaying,
     isSheetOpen: isSheetOpen
   };
+
+  /* Delegated tab switching: the #tabbar buttons carry data-tab but have
+   * no inline handlers — one listener covers present and future buttons.
+   * showTab() also sets location.hash; the hashchange re-fire is
+   * idempotent, so tapping the active tab is a harmless no-op. */
+  (function wireTabbar() {
+    var tabbar = document.getElementById('tabbar');
+    if (!tabbar) return;
+    tabbar.addEventListener('click', function (e) {
+      var t = e.target;
+      var btn = t && t.closest ? t.closest('[data-tab]') : null;
+      if (!btn || !tabbar.contains(btn)) return;
+      e.preventDefault();
+      showTab(btn.getAttribute('data-tab'));
+    });
+  })();
 })();

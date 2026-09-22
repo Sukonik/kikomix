@@ -2,7 +2,7 @@
 
 A restyle of the KikoMix web app that fuses **Google Material Design 3
 (Material You)** with **Spotify's player UX clarity**, keeping KikoMix's dark
-identity and the refined gold LionDavid accent.
+identity and the signature orange brand accent.
 
 - `css/tokens.css` — M3 dark color scheme, shape/type/elevation/state tokens
 - `css/base.css` — reset, atmosphere, layout shell, focus, scrollbars
@@ -28,20 +28,20 @@ no web fonts, no external requests.
   `color-mix()`, e.g. `color-mix(in srgb, var(--on-primary) var(--state-hover),
   var(--primary))`. Used on every interactive element instead of ad-hoc
   brightness filters.
-- **FAB** — the Now Playing transport's play button is a gold circular FAB
+- **FAB** — the Now Playing transport's play button is an orange circular FAB
   (`.tbtn.tbtn-main`, 72px), composed from `.btn` + `.tbtn` so existing
   class names keep working.
 - **Navigation bar** — the bottom tab bar is an M3 navigation bar: 80px,
   `surface-container`, 6 destinations, 56×32 active-indicator pill behind the
-  active icon, 12px labels, gold active color.
+  active icon, 12px labels, orange active color.
 - **Chips** — assist chips (static info like "Prototype mock", "Connected")
   and filter chips (toggleable, `.active` / `[aria-pressed="true"]` /
   `.selected` → `secondary-container`). Horizontally scrollable rows.
-- **Sliders** — M3 linear sliders: 4px track, gold active fill driven by
+- **Sliders** — M3 linear sliders: 4px track, orange active fill driven by
   `--fill` (WebKit) / `::-moz-range-progress` (Firefox), 20px thumb with a
   state-layer halo on hover/focus, 48px touch height.
 - **Switches** — M3 switch anatomy: 52×32 track, 16px thumb unselected,
-  24px thumb selected, gold selected track; the `<label>` is a 48px touch
+  24px thumb selected, orange selected track; the `<label>` is a 48px touch
   target (the DOM is `label.switch > input + span`, styled accordingly).
 - **Snackbar** — `#toast` is an M3 snackbar: inverse-surface container,
   8px radius, 48px min-height, visibility driven by the existing `.show`
@@ -60,7 +60,7 @@ no web fonts, no external requests.
   rounded artwork → centered title/artist → service badge → honest
   "simulated playback" notice → 4px linear progress with tabular-nums time
   labels → transport (prev / FAB play / next) → "Up next" queue with the
-  current track highlighted in gold.
+  current track highlighted in orange.
 - **Section headers** — generous whitespace (32px above / 16px below),
   title-large bold type, no cramped uppercase labels.
 
@@ -83,8 +83,8 @@ no web fonts, no external requests.
 
 ## Deliberately left out
 
-- **M3 dynamic color / tonal palettes** — the seed is fixed: refined gold
-  primary (`#e3a008`), muted slate secondary. No user theming.
+- **M3 dynamic color / tonal palettes** — the seed is fixed: signature orange
+  primary (`#FF8000`), muted slate secondary. No user theming.
 - **Navigation drawer** — the rail + bottom bar cover all six destinations.
 - **Light theme** — dark identity is the product; `color-scheme: dark` is set.
 - **Web fonts / external requests** — system stack only, per constraints.
@@ -96,10 +96,10 @@ no web fonts, no external requests.
 
 ## Color roles
 
-- **Primary gold `#e3a008`** (refined, slightly desaturated from `#f2b90d`):
-  CTAs, active states, progress, FAB, focus rings, LionDavid accents.
-  `on-primary` is dark (`#1e1600`); `primary-container` is a dark tonal gold
-  (`#3d2f06`) with light gold text (`#ffd964`).
+- **Primary orange `#FF8000`** (signature brand accent):
+  CTAs, active states, progress, FAB, focus rings.
+  `on-primary` is dark (`#160b00`); `primary-container` is a dark tonal orange
+  (`#3a1e00`) with light orange text (`#ffb163`).
 - **Secondary muted slate**: tonal buttons, selected filter chips.
 - **Technique accents** (crimson, solar yellow, electric blue, violet, teal —
   all slightly muted for dark mode): **reserved for their features only**

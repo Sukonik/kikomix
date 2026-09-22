@@ -1,15 +1,15 @@
 /* ============================================================
    KikoMix · Design Tokens — Material You (M3) dark scheme
    Fuses Material Design 3 tonal color with Spotify's player
-   clarity, keeping KikoMix's dark identity + refined gold
-   LionDavid accent.
+   clarity, keeping KikoMix's dark identity + signature orange
+   brand accent.
 
    Vanilla CSS. No dependencies. Mobile-first. System fonts only.
 
    Conventions
    - Surfaces use M3 tonal steps (container-lowest → highest),
      never flat grays.
-   - Primary is a refined, slightly desaturated gold (#e3a008).
+   - Primary is the signature brand orange (#FF8000).
    - Technique accents are muted for dark mode and reserved for
      their features only — never for general UI chrome.
    - State layers use color-mix() with --state-hover/--state-pressed.
@@ -26,16 +26,25 @@
   --surface-container-high: #1e1e25;   /* search bar, controls */
   --surface-container-highest: #27272f;/* inputs, slider tracks */
   --on-surface: #f1efe8;               /* primary text */
+  --text: var(--on-surface);           /* legacy alias: primary text */
   --on-surface-variant: #a9a49a;       /* secondary text (warm gray) */
   --outline: #8f887a;                  /* strong borders */
   --outline-variant: rgba(241, 239, 232, .09); /* hairlines */
 
-  /* ---------- Primary: refined LionDavid gold ----------
-     Slightly desaturated from #f2b90d so it reads premium. */
-  --primary: #e3a008;
-  --on-primary: #1e1600;
-  --primary-container: #3d2f06;        /* dark tonal gold */
-  --on-primary-container: #ffd964;     /* light gold text on dark */
+  /* ---------- Primary: signature KikoMix orange ----------
+     The single brand accent. Technique accents are reserved for
+     their features only (see below). */
+  --primary: #FF8000;
+  --on-primary: #160b00;
+  --primary-container: #3a1e00;        /* dark tonal orange */
+  --on-primary-container: #ffb163;     /* light orange text on dark */
+
+  /* ---------- Brand accent (user-selectable) ----------
+     Signature orange (#FF8000) is the brand default; alternate blue
+     (#009FFF) is offered in the Sources → Brand picker, which sets this
+     variable live on :root. Tints chrome around brand artwork (rings,
+     glows, selected states) — never the marks themselves. */
+  --brand-accent: #FF8000;
 
   /* ---------- Secondary: muted slate ---------- */
   --secondary: #9aa4b8;
@@ -120,6 +129,7 @@
 
   /* ---------- Layout ---------- */
   --app-max: 720px;        /* main content column */
+  --nav-rail-w: 80px;      /* navigation rail width (>=600px) */
   --tabbar-height: 80px;   /* M3 navigation bar height */
 
   /* ---------- Motion ---------- */
@@ -159,7 +169,7 @@
   --fs-tiny: var(--ts-body-sm);
   --shadow-card: var(--elevation-1);
   --shadow-pop: var(--elevation-3);
-  --shadow-gold: 0 2px 12px rgba(227, 160, 8, .25);
+  --shadow-gold: 0 2px 12px rgba(255, 128, 0, .25);
   --shadow-crimson: 0 2px 12px rgba(217, 83, 89, .25);
   --shadow-electric: 0 2px 12px rgba(110, 168, 242, .25);
 }

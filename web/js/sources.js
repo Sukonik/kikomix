@@ -144,10 +144,34 @@
       moreIds.map(function (id) { return sourceRow(id, s); }).join('');
     h += '<p class="tech-note">Mock connections — real OAuth plugs in later. ' +
       'The order above sets your preferred-service priority for playback.</p>';
+    // Brand picker (in-app icon variant + accent). Owned by js/brand.js;
+    // guarded so Sources still renders if that module failed to load.
+    try {
+      if (KM.brand && typeof KM.brand.sectionHTML === 'function') h += KM.brand.sectionHTML();
+    } catch (e) {}
     root.innerHTML = h;
   }
 
   function onClick(e) {
+    // Brand picker radios (owned by js/brand.js).
+    var bIcon = e.target.closest('[data-brand-icon]');
+    if (bIcon) {
+      try {
+        if (KM.brand && typeof KM.brand.setIcon === 'function') {
+          KM.brand.setIcon(bIcon.getAttribute('data-brand-icon'));
+        }
+      } catch (err) {}
+      return;
+    }
+    var bAccent = e.target.closest('[data-brand-accent]');
+    if (bAccent) {
+      try {
+        if (KM.brand && typeof KM.brand.setAccent === 'function') {
+          KM.brand.setAccent(bAccent.getAttribute('data-brand-accent'));
+        }
+      } catch (err) {}
+      return;
+    }
     var btn = e.target.closest('[data-act]');
     if (!btn) return;
     var id = btn.getAttribute('data-id');

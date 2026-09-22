@@ -11,7 +11,9 @@
   --nav-bar-h: 64px;    /* bottom nav height (<600px), content area */
   --nav-rail-w: 80px;   /* navigation rail width (>=600px) */
   --mini-h: 64px;       /* mini-player height (<1024px) */
-  --fullbar-h: 88px;    /* full player bar height (>=1024px) */
+  --fullbar-h: 96px;    /* full player bar height (>=1024px): fits the
+                           transport row + slim seek row with room to
+                           vertically center the side clusters */
   --content-max: 720px;    /* mobile content column */
   --content-max-md: 960px; /* tablet / small laptop */
   --content-max-lg: 1240px;/* desktop */
@@ -61,6 +63,25 @@ body.has-player #main {
   }
   body.has-player #main {
     padding-bottom: calc(var(--fullbar-h) + var(--sab) + var(--space-6));
+  }
+}
+
+/* ---------- App header clears the rail ----------
+   The header is centered on the full viewport by components.css; at
+   >=600px that would slide the logo under the rail, so it gets the
+   same left offset and column rhythm as #main. */
+@media (min-width: 600px) {
+  .app-header {
+    margin-left: var(--nav-rail-w);
+    margin-right: auto;
+    max-width: var(--content-max-md);
+    padding-inline: var(--space-6);
+  }
+}
+@media (min-width: 1024px) {
+  .app-header {
+    max-width: min(var(--content-max-lg), calc(100% - var(--nav-rail-w)));
+    padding-inline: var(--space-8);
   }
 }
 
@@ -157,8 +178,10 @@ section.tab.active { display: block; }
 /* --- Tablet + desktop: navigation rail --- */
 @media (min-width: 600px) {
   #tabbar {
-    top: 0; left: 0; bottom: 0;
+    top: 0; left: 0; bottom: 0; right: auto;
     width: var(--nav-rail-w);
+    max-width: none;
+    margin: 0;
     flex-direction: column;
     align-items: stretch;
     border-right: 1px solid var(--line);
@@ -200,14 +223,16 @@ section.tab.active { display: block; }
 }
 #tabbar > button.active svg { animation: beamPulse 2.4s ease-in-out infinite; }
 
-/* ---------- Toast clears nav + player ---------- */
+/* ---------- Toast clears nav + player ----------
+   At >=600px the toast stays inside the content area (clear of the
+   rail) whether or not the player bar is showing. */
 body.has-player #toast {
   bottom: calc(var(--nav-bar-h) + var(--sab) + var(--mini-h) + var(--space-4));
 }
 @media (min-width: 600px) {
+  #toast { left: calc(50% + var(--nav-rail-w) / 2); }
   body.has-player #toast {
     bottom: calc(var(--mini-h) + var(--sab) + var(--space-4));
-    left: calc(50% + var(--nav-rail-w) / 2);
   }
 }
 @media (min-width: 1024px) {
