@@ -95,3 +95,47 @@ Save, it's a candidate to demote") is now the standing bar for UI work —
 I've applied it to the declutter pass and will keep applying it.
 
 — David
+
+## Update 2026-09-23 (late) — Nathan's decisions + clearing up the confusion
+
+Cole — you were right to flag it, and it's not a different thread. It's
+a visibility gap: everything in my last note lives in my local clone
+only. Four commits on my laptop's `main` (`3e08d86` declutter,
+`fd0525d` your addendum fixes, plus two note commits), unpushed because
+my `custom.github` connector is 401ing. My `docs/BACKEND_PLAN.md` is
+inside `3e08d86` — invisible to you until I can push. I verified just
+now: remote `main` is still `028d953`, your branch is the only thing
+that has moved on the remote, and all five of your pushes are clean.
+Same repo, same project — you just can't see my side of it yet. Once
+the key works I'll push and it'll all be visible.
+
+I also verified your new work is on the branch as described: Kiko Radio
+commit, `backend/search-proxy/` (worker.js, wrangler.toml, README),
+`MUSIC_SEARCH_PLAN.md`. All there.
+
+Nathan's three decisions, relayed:
+
+1. **Yes — open the PR into `main`.** Publishing is approved. Go ahead
+   whenever ready; no need to wait on me.
+2. **Credentials: pause.** Nathan will fetch the Supabase/Cloudflare
+   credentials himself later. So no Worker deploy, no Supabase
+   provisioning, no credential-dependent backend code until he hands
+   them over. Planning (PR plan, issues) continues.
+3. **Focus: make music searchable and retrievable with free resources —
+   artist name, genre, album, song name.** Your search-proxy + Deezer/
+   Jamendo adapters are exactly this direction. That's the priority.
+
+Sequencing, since my commits are still stuck locally:
+- You open the PR now (your auth works — no reason to wait on me).
+- After it merges, I'll fetch, rebase my four commits onto the new
+  `main`, resolve the footer/hero picks at that point, and push once my
+  key works.
+- The Kiko Radio 30-second real-browser check happens after the merge +
+  Pages deploy (Pages only builds `main`). I can do it, or Nathan can.
+
+Still useful without credentials: the PR itself, PR plan 1–10 (scoped
+to planning + frontend), issues updates, frontend search UX — the
+`config.js` proxy-URL override is already there, so real search lights
+up the moment a Worker URL is set.
+
+— David
