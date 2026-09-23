@@ -169,14 +169,14 @@
     });
   }
 
-  /* ---------- panel ---------- */
-  function renderInto(container) {
+  /* ---------- panel ----------
+   * renderInto(container, compact): compact=true renders just the controls
+   * (for the Labs accordion row, which supplies its own title + ⓘ); the
+   * default renders the full standalone card. */
+  function renderInto(container, compact) {
     if (!container) return;
     injectStyles();
-    container.innerHTML =
-      '<div class="card solar-card">' +
-      '<h3 class="section-title">Solar Flare — Visual Sync <span class="chip">Prototype mock</span></h3>' +
-      '<p class="tech-note">A gentle glow tinted to the current track. Visual mock — no audio analysis.</p>' +
+    var controls =
       '<div class="switch-row"><span>Glow</span>' +
       '<label class="switch"><input type="checkbox" id="km-solar-on"' + (state.on ? ' checked' : '') +
       ' aria-label="Toggle Solar Flare glow"><span></span></label></div>' +
@@ -185,7 +185,12 @@
       '" aria-label="Glow brightness"></div>' +
       '<div class="switch-row"><span>Reduced motion</span>' +
       '<label class="switch"><input type="checkbox" id="km-solar-rm"' + (state.reducedMotion ? ' checked' : '') +
-      ' aria-label="Reduced motion"><span></span></label></div>' +
+      ' aria-label="Reduced motion"><span></span></label></div>';
+    container.innerHTML = compact ? controls :
+      '<div class="card solar-card">' +
+      '<h3 class="section-title">Solar Flare — Visual Sync <span class="chip">Prototype mock</span></h3>' +
+      '<p class="tech-note">A gentle glow tinted to the current track. Visual mock — no audio analysis.</p>' +
+      controls +
       '<p class="tech-note">Gentle pulse only — no flashing or strobing, ever.</p>' +
       '</div>';
     var on = container.querySelector('#km-solar-on');
@@ -212,13 +217,20 @@
     inited = true;
     injectStyles();
     ensureLayer();
-    var host = document.getElementById('np-extras');
-    if (host && !document.getElementById(SECTION_ID)) {
-      var sec = document.createElement('section');
-      sec.id = SECTION_ID;
-      if (host.firstChild) host.insertBefore(sec, host.firstChild);
-      else host.appendChild(sec);
-      renderInto(sec);
+    // Preferred: render compact controls into the Labs accordion row
+    // (techniques.js owns the mount). Legacy: standalone section.
+    var mount = document.querySelector('[data-labs-mount="solar"]');
+    if (mount && !mount.querySelector('#km-solar-on')) {
+      renderInto(mount, true);
+    } else if (!mount) {
+      var host = document.getElementById('np-extras');
+      if (host && !document.getElementById(SECTION_ID)) {
+        var sec = document.createElement('section');
+        sec.id = SECTION_ID;
+        if (host.firstChild) host.insertBefore(sec, host.firstChild);
+        else host.appendChild(sec);
+        renderInto(sec);
+      }
     }
     try {
       if (KM.player && typeof KM.player.onTrackChange === 'function') {

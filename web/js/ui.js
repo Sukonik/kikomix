@@ -152,10 +152,81 @@
     toast: toast,
     esc: esc,
     badge: badge,
+    info: info,
     expandNowPlaying: expandNowPlaying,
     collapseNowPlaying: collapseNowPlaying,
     isSheetOpen: isSheetOpen
   };
+
+  /* ---------- ⓘ info-tip system ----------
+   * info(key, text, label) registers a longer explanation and returns a
+   * small "i" button. One shared popover shows the text on tap/click;
+   * Escape, outside tap, or another ⓘ closes it. Used to declutter
+   * menus: short labels stay visible, details hide behind ⓘ. */
+  var infoTexts = {};
+  var infoPop = null;
+
+  function info(key, text, label) {
+    if (key && text != null) infoTexts[key] = String(text);
+    return '<button type="button" class="info-btn" data-info-key="' + esc(key) + '"' +
+      ' aria-label="More info' + (label ? ': ' + esc(label) : '') + '" aria-expanded="false">' +
+      '<span aria-hidden="true">i</span></button>';
+  }
+
+  function closeInfoPop() {
+    if (infoPop && infoPop.parentNode) infoPop.parentNode.removeChild(infoPop);
+    infoPop = null;
+    var open = document.querySelectorAll('.info-btn[aria-expanded="true"]');
+    for (var i = 0; i < open.length; i++) open[i].setAttribute('aria-expanded', 'false');
+  }
+
+  function openInfoPop(btn) {
+    closeInfoPop();
+    var key = btn.getAttribute('data-info-key');
+    var text = infoTexts[key];
+    if (!text) return;
+    var pop = document.createElement('div');
+    pop.id = 'km-info-pop';
+    pop.className = 'info-pop';
+    pop.setAttribute('role', 'dialog');
+    pop.textContent = text;
+    document.body.appendChild(pop);
+    infoPop = pop;
+    btn.setAttribute('aria-expanded', 'true');
+    // Position near the button; flip inward when close to an edge.
+    try {
+      var r = btn.getBoundingClientRect();
+      var pw = Math.min(280, window.innerWidth - 24);
+      pop.style.maxWidth = pw + 'px';
+      var left = r.left + r.width / 2 - pw / 2;
+      left = Math.max(12, Math.min(left, window.innerWidth - pw - 12));
+      pop.style.left = left + 'px';
+      var top = r.bottom + 8;
+      var ph = pop.offsetHeight || 80;
+      if (top + ph > window.innerHeight - 12) top = Math.max(12, r.top - ph - 8);
+      pop.style.top = top + 'px';
+    } catch (e) { /* popover still shows; position best-effort */ }
+  }
+
+  (function wireInfoTips() {
+    document.addEventListener('click', function (e) {
+      var btn = e.target && e.target.closest ? e.target.closest('[data-info-key]') : null;
+      if (btn) {
+        // Don't toggle a wrapping <details>, don't bubble to other handlers.
+        e.preventDefault();
+        e.stopPropagation();
+        if (btn.getAttribute('aria-expanded') === 'true') closeInfoPop();
+        else openInfoPop(btn);
+        return;
+      }
+      if (infoPop && !(e.target && e.target.closest && e.target.closest('#km-info-pop'))) {
+        closeInfoPop();
+      }
+    }, true); // capture: run before <details> summary toggling
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') closeInfoPop();
+    });
+  })();
 
   /* Delegated tab switching: the #tabbar buttons carry data-tab but have
    * no inline handlers — one listener covers present and future buttons.

@@ -1174,3 +1174,162 @@ input:not([type]):focus {
   color: var(--on-surface-variant);
   padding: var(--space-2) var(--space-1) 0;
 }
+
+/* ============================================================
+   Declutter pass — info-tips, Labs accordion, LionDavid assistant
+   ============================================================ */
+
+/* ---------- ⓘ info button + popover ---------- */
+.info-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  margin-left: 6px;
+  border-radius: var(--shape-full);
+  border: 1px solid var(--outline-variant);
+  background: transparent;
+  color: var(--on-surface-variant);
+  font-size: .72rem;
+  font-style: italic;
+  font-family: Georgia, serif;
+  line-height: 1;
+  cursor: pointer;
+  vertical-align: middle;
+  flex: none;
+}
+.info-btn:hover { color: var(--on-surface); border-color: var(--outline); }
+.info-btn[aria-expanded="true"] {
+  color: var(--on-primary-container);
+  border-color: var(--primary);
+  background: var(--primary-container);
+}
+.info-pop {
+  position: fixed;
+  z-index: 300;
+  padding: var(--space-3);
+  border-radius: var(--shape-md);
+  background: var(--surface-container-high);
+  border: 1px solid var(--line-strong);
+  box-shadow: var(--elevation-3);
+  color: var(--on-surface);
+  font-size: var(--ts-body-md);
+  line-height: var(--lh-body);
+  animation: riseIn var(--dur-fast) var(--ease);
+}
+
+/* ---------- Labs (collapses the technique prototypes) ---------- */
+.labs-card { padding: var(--space-4); }
+.labs-head { display: flex; align-items: center; margin: 0 0 var(--space-1); }
+.labs-head .section-title { margin: 0; }
+.labs-sub { margin: 0 0 var(--space-3); color: var(--on-surface-variant); font-size: var(--ts-body-md); }
+.labs-row {
+  border: 1px solid var(--outline-variant);
+  border-radius: var(--shape-md);
+  margin-top: var(--space-2);
+  background: var(--surface-container-low);
+  overflow: hidden;
+}
+.labs-row > summary {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  cursor: pointer;
+  list-style: none;
+  font-weight: var(--weight-medium);
+}
+.labs-row > summary::-webkit-details-marker { display: none; }
+.labs-row > summary::before {
+  content: "";
+  flex: none;
+  width: 8px;
+  height: 8px;
+  border-right: 2px solid var(--on-surface-variant);
+  border-bottom: 2px solid var(--on-surface-variant);
+  transform: rotate(-45deg);
+  transition: transform var(--dur-fast) var(--ease);
+}
+.labs-row[open] > summary::before { transform: rotate(45deg); }
+.labs-row > summary .chip { margin-left: auto; }
+.labs-row > summary .info-btn { margin-left: 0; }
+.labs-body { padding: 0 var(--space-3) var(--space-3); border-top: 1px solid var(--outline-variant); }
+.labs-body .tech-panel { border: 0; background: transparent; padding: var(--space-2) 0 0; margin: 0; }
+.labs-body .tech-panel + .tech-panel { margin-top: 0; }
+
+/* ---------- LionDavid assistant: FAB + sheet ---------- */
+#lion-fab {
+  position: fixed;
+  right: 16px;
+  bottom: calc(var(--tabbar-height) + 16px);
+  z-index: 90;
+  width: 56px;
+  height: 56px;
+  padding: 0;
+  border-radius: var(--shape-full);
+  border: 2px solid var(--brand-accent, var(--primary));
+  background: var(--surface-container-high);
+  box-shadow: var(--elevation-3);
+  cursor: pointer;
+  overflow: hidden;
+}
+#lion-fab img { width: 100%; height: 100%; object-fit: cover; display: block; }
+#lion-fab .fab-dot {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  width: 12px;
+  height: 12px;
+  border-radius: var(--shape-full);
+  background: var(--primary);
+  border: 2px solid var(--surface);
+}
+#lion-fab.attn { animation: fabNudge 1.6s var(--ease) 2; }
+@keyframes fabNudge {
+  0%, 100% { transform: translateY(0); }
+  30% { transform: translateY(-6px); }
+  60% { transform: translateY(0); }
+}
+/* Lift above the player bar when it is visible. */
+#player:not([hidden]) ~ #lion-fab { bottom: calc(var(--tabbar-height) + 96px + 16px); }
+@media (min-width: 600px) {
+  #lion-fab { bottom: 16px; }
+  #player:not([hidden]) ~ #lion-fab { bottom: 112px; }
+}
+.lion-sheet { max-width: 420px; }
+.lion-sheet__head { display: flex; align-items: center; gap: var(--space-3); }
+.lion-sheet__head img { width: 56px; height: 56px; border-radius: var(--shape-full); object-fit: cover; }
+.lion-sheet__head h3 { margin: 0; font-size: var(--ts-title-md); }
+.lion-sheet__head p { margin: 2px 0 0; color: var(--on-surface-variant); font-size: var(--ts-body-md); }
+.lion-sheet__tip {
+  margin: var(--space-3) 0;
+  padding: var(--space-3);
+  border-radius: var(--shape-md);
+  background: var(--surface-container-low);
+  border: 1px solid var(--outline-variant);
+  font-size: var(--ts-body-md);
+  min-height: 3.2em;
+}
+.lion-sheet__links { display: flex; flex-wrap: wrap; gap: var(--space-2); margin-top: var(--space-3); }
+
+/* Slim LionDavid strip on Home (replaces the old intro card). */
+.lion-strip {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  border-radius: var(--shape-lg);
+  background: var(--surface-container-low);
+  border: 1px solid var(--outline-variant);
+  margin-bottom: var(--space-4);
+}
+.lion-strip img { width: 44px; height: 44px; border-radius: var(--shape-full); object-fit: cover; flex: none; }
+.lion-strip__text { flex: 1; min-width: 0; }
+.lion-strip__text strong { display: block; font-size: var(--ts-title-sm); }
+.lion-strip__text span { color: var(--on-surface-variant); font-size: var(--ts-body-md); }
+
+/* ---------- Sources rows: less chrome per row ---------- */
+.source-row .track-meta { min-width: 0; }
+.source-row .btn-ghost { padding: 6px 8px; }
+.src-blurb { display: none; } /* blurb now lives behind the ⓘ next to the tier chip */

@@ -1,9 +1,9 @@
 /* KikoMix service worker — offline app shell.
- * Cache name: kikomix-v3. Install caches the shell best-effort (sibling
+ * Cache name: kikomix-v4. Install caches the shell best-effort (sibling
  * agents' files may not exist yet, so individual failures are skipped).
  * Fetch: cache-first for GET same-origin, fallback to network (and cache
  * successful GETs for next time). Activate: delete old caches. */
-var CACHE = 'kikomix-v3';
+var CACHE = 'kikomix-v4';
 
 var SHELL = [
   './',
@@ -31,6 +31,7 @@ var SHELL = [
   'js/brand.js',
   'assets/brand/logo-primary.jpg',
   'assets/brand/logotype.jpg',
+  'assets/fonts/inter-var-latin.woff2',
   'icons/dark/icon-192.png',
   'icons/dark/icon-512.png',
   'icons/dark/icon-maskable-512.png',

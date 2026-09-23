@@ -1,10 +1,13 @@
-/* KikoMix — LionDavid companion
+/* KikoMix — LionDavid companion (assistant edition)
  *
- * window.KM.lion = { init(), say(text), tip() }
+ * window.KM.lion = { init(), say(text), tip(), open() }
  *
- * LionDavid is a warm, confident, creative musical commander. He never
- * auto-plays audio and never blocks the UI — tips and onboarding are
- * always dismissible.
+ * LionDavid is a warm, confident, creative musical commander — now an
+ * on-demand assistant instead of ambient chrome:
+ *  - a floating assistant button (character bust) opens his sheet;
+ *  - a slim strip on Home introduces him;
+ *  - tips appear inside the sheet, never as auto pop-ups on tab switches.
+ * He never auto-plays audio and never blocks the UI.
  */
 (function () {
   'use strict';
@@ -20,12 +23,23 @@
       return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
     });
   }
+  function info(key, text, label) {
+    try {
+      if (KM.ui && typeof KM.ui.info === 'function') return KM.ui.info(key, text, label);
+    } catch (e) {}
+    return '';
+  }
+  function toast(msg) {
+    try { if (KM.ui && typeof KM.ui.toast === 'function') KM.ui.toast(msg); } catch (e) {}
+  }
   function tracks() { return (window.KM_DATA && window.KM_DATA.tracks) || []; }
   function byId(id) {
     var ts = tracks();
     for (var i = 0; i < ts.length; i++) if (ts[i] && ts[i].id === id) return ts[i];
     return null;
   }
+
+  var BUST = 'assets/brand/character-bust.jpg';
 
   /* ---------- gold SVG logo (lion-emoji-free) ---------- */
   var __lionUid = 0;
@@ -72,26 +86,9 @@
     'Mimicry lives below your mixes — give it a seed song and I\'ll find its vibe.'
   ];
   var tipIdx = 0;
+  var pendingTip = null; // set by say()/tip() while the sheet is closed; shown as a FAB dot
 
-  /** Show the #lion-tip bar with a message and a dismiss ×. */
-  function say(text) {
-    var bar = document.getElementById('lion-tip');
-    if (!bar) {
-      bar = document.createElement('div');
-      bar.id = 'lion-tip';
-      if (document.body.firstChild) document.body.insertBefore(bar, document.body.firstChild);
-      else document.body.appendChild(bar);
-    }
-    bar.innerHTML = '<img class="tip-bar__bust" src="assets/brand/character-bust.jpg" alt="">' +
-      '<span class="lion-tip-msg">' + esc(text) + '</span>' +
-      '<button class="lion-tip-x" aria-label="Dismiss">×</button>';
-    bar.style.display = 'flex';
-    var x = bar.querySelector('.lion-tip-x');
-    if (x) x.addEventListener('click', function () { bar.style.display = 'none'; });
-  }
-
-  /** Rotate contextual tips. Call on tab switches. */
-  function tip() {
+  function nextTip() {
     var line = null;
     try {
       var st = KM.player && KM.player.state;
@@ -104,7 +101,104 @@
       }
     } catch (e) {}
     if (!line) { line = TIPS[tipIdx % TIPS.length]; tipIdx++; }
-    say(line);
+    return line;
+  }
+
+  /** Show a message: inside the assistant sheet when open, otherwise as a
+   *  toast (so action confirmations are still seen) plus a dot on the FAB. */
+  function say(text) {
+    var box = document.getElementById('km-lion-tipbox');
+    if (box) {
+      box.textContent = text;
+      return;
+    }
+    pendingTip = text;
+    var fab = document.getElementById('lion-fab');
+    if (fab && !fab.querySelector('.fab-dot')) {
+      var dot = document.createElement('span');
+      dot.className = 'fab-dot';
+      dot.setAttribute('aria-hidden', 'true');
+      fab.appendChild(dot);
+    }
+    toast(text);
+  }
+
+  /** Pick the next contextual tip and route it through say(). */
+  function tip() { say(nextTip()); }
+
+  /* ---------- assistant sheet ---------- */
+  function closeSheet() {
+    var ov = document.getElementById('km-lion-sheet');
+    if (ov && ov.parentNode) ov.parentNode.removeChild(ov);
+  }
+
+  function open() {
+    closeSheet();
+    pendingTip = null;
+    var fab = document.getElementById('lion-fab');
+    if (fab) {
+      var dot = fab.querySelector('.fab-dot');
+      if (dot && dot.parentNode) dot.parentNode.removeChild(dot);
+      fab.classList.remove('attn');
+      try { localStorage.setItem('km:lion-seen', '1'); } catch (e) {}
+    }
+    var ov = document.createElement('div');
+    ov.className = 'modal show';
+    ov.id = 'km-lion-sheet';
+    ov.innerHTML =
+      '<div class="modal-card card lion-sheet" role="dialog" aria-modal="true" aria-label="LionDavid assistant">' +
+      '<div class="lion-sheet__head">' +
+      '<img src="' + BUST + '" alt="">' +
+      '<div><h3>LionDavid</h3><p>Your musical commander</p></div>' +
+      '</div>' +
+      '<div class="lion-sheet__tip" id="km-lion-tipbox" aria-live="polite">Ask me anything — or tap below for a tip.</div>' +
+      '<button class="btn btn-primary" id="km-lion-tipbtn" type="button">Give me a tip</button>' +
+      '<div class="lion-sheet__links">' +
+      '<button class="btn btn-ghost" type="button" data-goto="search">Search free music</button>' +
+      '<button class="btn btn-ghost" type="button" data-goto="mixes">My mixes</button>' +
+      '<button class="btn btn-ghost" type="button" data-goto="nowplaying">Labs</button>' +
+      '</div>' +
+      '<p class="track-sub" style="margin-top:12px">One search across every connected service. ' +
+      'Playback here is simulated — open any track in its provider to hear the real thing. ' +
+      info('lion:role',
+        'LionDavid keeps your mixes organized, explains free-tier options, and hosts the Labs prototypes. He never auto-plays audio and never sends your listening data anywhere.',
+        'What does LionDavid do') +
+      '</p>' +
+      '<div class="modal-actions"><button class="btn btn-ghost" type="button" data-close>Close</button></div>' +
+      '</div>';
+    ov.addEventListener('mousedown', function (e) { if (e.target === ov) closeSheet(); });
+    ov.addEventListener('click', function (e) {
+      if (e.target.closest('[data-close]')) { closeSheet(); return; }
+      if (e.target.closest('#km-lion-tipbtn')) { tip(); return; }
+      var go = e.target.closest('[data-goto]');
+      if (go) {
+        closeSheet();
+        try { if (KM.ui && typeof KM.ui.showTab === 'function') KM.ui.showTab(go.getAttribute('data-goto')); } catch (err) {}
+      }
+    });
+    document.body.appendChild(ov);
+    var key = function (e) {
+      if (e.key === 'Escape') { closeSheet(); document.removeEventListener('keydown', key); }
+    };
+    document.addEventListener('keydown', key);
+  }
+
+  /* ---------- floating assistant button ---------- */
+  function mountFab() {
+    if (document.getElementById('lion-fab')) return;
+    var b = document.createElement('button');
+    b.id = 'lion-fab';
+    b.type = 'button';
+    b.setAttribute('aria-label', 'Ask LionDavid');
+    b.innerHTML = '<img src="' + BUST + '" alt="">';
+    b.addEventListener('click', open);
+    document.body.appendChild(b);
+    // One gentle nudge on first run so the assistant is discoverable.
+    try {
+      if (!localStorage.getItem('km:lion-seen')) {
+        setTimeout(function () { b.classList.add('attn'); }, 1200);
+      }
+    } catch (e) {}
   }
 
   /* ---------- onboarding ---------- */
@@ -118,7 +212,7 @@
       '<ul class="lion-points">' +
       '<li><strong>Search free sources first</strong> — one box across every connected service.</li>' +
       '<li><strong>Mixes route each song to its service</strong> — tap "Open in provider" on any track to hear it where it lives; free sources need no subscription.</li>' +
-      '<li><strong>Techniques are prototypes</strong> — playful experiments, always honestly labeled.</li>' +
+      '<li><strong>Labs holds playful prototypes</strong> — visual mocks, honestly labeled, tucked out of the way.</li>' +
       '</ul>' +
       '<button class="btn btn-primary" id="km-lion-start">Explore the demo</button>' +
       '</div>';
@@ -138,40 +232,40 @@
       try { localStorage.setItem('km:lion-intro', '1'); } catch (e) {}
       if (usingHost) { host.innerHTML = ''; host.classList.remove('modal', 'show'); }
       else if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
-      tip(); // a friendly first word — never auto-plays audio
+      // No auto-tip pop-up; the FAB nudges once so the assistant is discoverable.
+      var fab = document.getElementById('lion-fab');
+      if (fab) fab.classList.add('attn');
     });
   }
 
-  /* ---------- home card ---------- */
+  /* ---------- slim home strip (replaces the old intro card) ---------- */
   function renderHomeCard() {
     var host = document.getElementById('home-lion');
     if (!host) return;
+    host.classList.remove('card');
     host.innerHTML =
-      '<div class="card lion-card">' + lionSVG(64) +
-      '<div class="lion-card-body">' +
-      '<h3 class="section-title">LionDavid</h3>' +
-      '<p class="lion-tag">Your musical commander</p>' +
-      '<p>Search free sources first, build mixes that route each song to its home, ' +
-      'and explore playful prototype techniques. I\'ll keep your mixes organized — just say the word.</p>' +
-      '<button class="btn btn-ghost" id="km-lion-tipbtn">Give me a tip</button>' +
-      '</div></div>';
-    var b = host.querySelector('#km-lion-tipbtn');
-    if (b) b.addEventListener('click', tip);
+      '<div class="lion-strip">' +
+      '<img src="' + BUST + '" alt="">' +
+      '<div class="lion-strip__text"><strong>LionDavid</strong>' +
+      '<span>Your musical commander — tips, free-tier guidance, Labs.</span></div>' +
+      '<button class="btn btn-ghost" id="km-lion-open" type="button">Ask</button>' +
+      '</div>';
+    var b = host.querySelector('#km-lion-open');
+    if (b) b.addEventListener('click', open);
   }
 
   var inited = false;
   function init() {
     if (inited) return;
     inited = true;
+    mountFab();
     renderHomeCard();
-    // The shell can dispatch either of these CustomEvents on tab switches
-    // to rotate tips; KM.lion.tip() is also callable directly.
-    document.addEventListener('km:tab', tip);
-    document.addEventListener('km:tabchange', tip);
+    // Note: no auto-tips on tab switches anymore — the assistant is
+    // on-demand. KM.lion.tip() / say() remain for explicit calls.
     try {
       if (!localStorage.getItem('km:lion-intro')) showOnboarding();
     } catch (e) {}
   }
 
-  KM.lion = { init: init, say: say, tip: tip };
+  KM.lion = { init: init, say: say, tip: tip, open: open };
 })();

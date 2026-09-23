@@ -1,10 +1,14 @@
-/* KikoMix — Techniques (all prototype mocks)
+/* KikoMix — Labs (technique prototypes, all mocks)
  *
  * window.KM.techniques = { renderAll(container), onTrack(track) }
  *
- * Four playful technique panels. Every panel is honestly labeled as a
- * "Prototype mock": sliders and toggles are visual only — no audio is
- * processed, no hardware capabilities are claimed.
+ * The four technique prototypes plus Solar Flare live behind a single
+ * "Labs" card as collapsible rows — accessible but out of the way.
+ * Every panel is honestly labeled as a "Prototype mock": sliders and
+ * toggles are visual only — no audio is processed, no hardware
+ * capabilities are claimed. Long explanations hide behind ⓘ info-tips.
+ *
+ * Note: technique names are pending IP review before public launch.
  */
 (function () {
   'use strict';
@@ -23,6 +27,12 @@
     return String(v == null ? '' : v).replace(/[&<>"']/g, function (c) {
       return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
     });
+  }
+  function info(key, text, label) {
+    try {
+      if (KM.ui && typeof KM.ui.info === 'function') return KM.ui.info(key, text, label);
+    } catch (e) {}
+    return '';
   }
   function toast(msg) {
     try { if (KM.ui && typeof KM.ui.toast === 'function') KM.ui.toast(msg); } catch (e) {}
@@ -67,19 +77,17 @@
   /* ---------- Tri-Beam (crimson) ---------- */
   function triBeam() {
     return '<section class="tech-panel" style="--tech:#e5484d">' +
-      '<h4>Tri-Beam <span class="chip">Prototype mock</span></h4>' +
       '<p>Max Power listening preset (mock).</p>' +
       mockSlider('Bass') + mockSlider('Clarity') + mockSlider('Space') +
-      '<p class="tech-note">Visual mock — no audio processing. These sliders don\'t change any sound.</p>' +
       '<div class="battery-mock">Battery use: <span class="battery-bar"><span style="width:10%"></span></span> ~2%/hr display only</div>' +
-      '<p class="tech-note">Never exceeds your device\'s safe limits — keep volume under 85dB for long sessions.</p>' +
       '</section>';
   }
+  var TRIBREAM_INFO = 'Prototype mock — visual only, no audio processing; these sliders don\'t change any sound. ' +
+    'Never exceeds your device\'s safe limits — keep volume under 85dB for long sessions.';
 
   /* ---------- Dodon Ray (electric blue) ---------- */
   function dodonRay(t) {
     var h = '<section class="tech-panel" style="--tech:#2f7cf6">' +
-      '<h4>Dodon Ray <span class="chip">Prototype mock</span></h4>' +
       '<p>Precision Jump (mock) — hop between sections of the current track.</p>';
     if (t && t.sections && t.sections.length) {
       var dur = t.durationSec || 1;
@@ -96,11 +104,10 @@
     } else {
       h += '<div class="empty-state">No section data for the current track.</div>';
     }
-    h += '<p class="tech-note">Simulated seek — no real playback position changes. ' +
-      'Availability varies by connected service and its playback permissions.</p>' +
-      '</section>';
-    return h;
+    return h + '</section>';
   }
+  var DODON_INFO = 'Prototype mock — simulated seek, no real playback position changes. ' +
+    'Availability varies by connected service and its playback permissions.';
 
   /* ---------- Four Witches (teal) ---------- */
   function fourWitches() {
@@ -110,13 +117,12 @@
         'aria-label="Route to ' + esc(name) + '"><span></span></label></div>';
     }).join('');
     return '<section class="tech-panel" style="--tech:#14b8a6">' +
-      '<h4>Four Witches <span class="chip">Prototype mock</span></h4>' +
       '<p>Group Output (mock) — send the music everywhere at once.</p>' +
       rows +
-      '<p class="tech-note">Toggling shows a mock routing toast. ' +
-      'KikoMix can\'t promise simultaneous output to arbitrary Bluetooth devices — that depends on your OS.</p>' +
       '</section>';
   }
+  var WITCHES_INFO = 'Prototype mock — toggling shows a mock routing toast. ' +
+    'KikoMix can\'t promise simultaneous output to arbitrary Bluetooth devices — that depends on your OS.';
 
   /* ---------- Multi-Form (violet) ---------- */
   function multiForm(t) {
@@ -127,24 +133,34 @@
     }
     var ok = !!(t && localTrack && t.id === localTrack.id && (t.sources || []).indexOf('local') !== -1);
     var h = '<section class="tech-panel" style="--tech:#8b5cf6">' +
-      '<h4>Multi-Form <span class="chip">Prototype mock</span></h4>' +
       '<p>Stem Studio (mock).</p>';
     if (ok) {
       h += '<p class="track-sub">' + esc(t.title) + ' — local file</p>' +
-        mockSlider('Vocals') + mockSlider('Drums') + mockSlider('Bass') + mockSlider('Melody') +
-        '<p class="tech-note">Visual mock — no audio processing.</p>';
+        mockSlider('Vocals') + mockSlider('Drums') + mockSlider('Bass') + mockSlider('Melody');
     } else {
       h += '<div class="notice">Stem separation is only available for local files, your own uploads, ' +
         'or public-domain recordings — protected streaming audio is never extracted or altered.</div>';
       if (localTrack) {
-        h += '<p class="tech-note">Try it with: ' + esc(localTrack.title) + ' (' +
+        h += '<p class="track-sub">Try it with: ' + esc(localTrack.title) + ' (' +
           esc(localTrack.artist || 'Unknown artist') + ').</p>';
       }
     }
     return h + '</section>';
   }
+  var MULTIFORM_INFO = 'Prototype mock — visual only, no audio processing. Stem separation only applies to ' +
+    'local files, your own uploads, or public-domain recordings.';
 
-  /* ---------- render ---------- */
+  /* ---------- Labs card ---------- */
+  function labsRow(id, name, bodyHTML, infoText) {
+    return '<details class="labs-row" data-tech="' + id + '">' +
+      '<summary><span>' + esc(name) + '</span>' +
+      '<span class="chip">Prototype mock</span>' +
+      info('labs:' + id, infoText, name) +
+      '</summary>' +
+      '<div class="labs-body">' + bodyHTML + '</div>' +
+      '</details>';
+  }
+
   function renderAll(container) {
     if (!container) return;
     injectStyles();
@@ -155,11 +171,44 @@
       container.addEventListener('change', onChange);
       container._kmTechWired = true;
     }
+    // Preserve open rows across re-renders (e.g. track changes).
+    var openIds = [];
+    try {
+      var prev = container.querySelectorAll('details.labs-row[open]');
+      for (var pi = 0; pi < prev.length; pi++) openIds.push(prev[pi].getAttribute('data-tech'));
+    } catch (e) {}
     var t = currentTrack();
     container.innerHTML =
-      '<h3 class="section-title">KikoMix Techniques</h3>' +
-      '<p class="tech-note">Playful prototypes — visual only, no audio is processed.</p>' +
-      triBeam() + dodonRay(t) + fourWitches() + multiForm(t);
+      '<section class="card labs-card" aria-label="Labs">' +
+      '<h3 class="section-title labs-head">Labs' +
+      info('labs:about',
+        'Labs holds KikoMix\'s playful prototypes. Everything here is a visual mock — no audio is processed, ' +
+        'no hardware capabilities are claimed. Technique names are pending IP review before public launch.',
+        'About Labs') +
+      '</h3>' +
+      '<p class="labs-sub">Prototype playground — expand a row to play.</p>' +
+      labsRow('solar', 'Solar Flare', '<div data-labs-mount="solar"></div>',
+        'Prototype mock — a gentle glow tinted to the current track. No audio analysis. ' +
+        'Gentle pulse only — no flashing or strobing, ever.') +
+      labsRow('tribeam', 'Tri-Beam', triBeam(), TRIBREAM_INFO) +
+      labsRow('dodon', 'Dodon Ray', dodonRay(t), DODON_INFO) +
+      labsRow('witches', 'Four Witches', fourWitches(), WITCHES_INFO) +
+      labsRow('multiform', 'Multi-Form', multiForm(t), MULTIFORM_INFO) +
+      '</section>';
+    // Restore open rows.
+    try {
+      openIds.forEach(function (id) {
+        var d = container.querySelector('details.labs-row[data-tech="' + id + '"]');
+        if (d) d.open = true;
+      });
+    } catch (e) {}
+    // Solar Flare renders its controls into the Labs row (guarded).
+    try {
+      var mount = container.querySelector('[data-labs-mount="solar"]');
+      if (mount && KM.solarflare && typeof KM.solarflare.renderInto === 'function') {
+        KM.solarflare.renderInto(mount, true);
+      }
+    } catch (e) {}
   }
 
   function onClick(e) {

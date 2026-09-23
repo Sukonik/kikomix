@@ -37,6 +37,12 @@
     var a = (window.KM_ADAPTERS && window.KM_ADAPTERS.byId && window.KM_ADAPTERS.byId[sourceId]) || {};
     return '<span class="badge" data-source="' + esc(sourceId) + '">' + esc(a.name || sourceId) + '</span>';
   }
+  function info(key, text, label) {
+    try {
+      if (KM.ui && typeof KM.ui.info === 'function') return KM.ui.info(key, text, label);
+    } catch (e) {}
+    return '';
+  }
 
   /* ---------- scoring (max 10) ---------- */
   function score(seed, cand) {
@@ -97,7 +103,11 @@
         esc(t.title) + ' — ' + esc(t.artist || 'Unknown artist') + '</option>';
     }).join('');
     var h = '<section class="card mimicry-panel">' +
-      '<h3 class="section-title">Mimicry — Vibe Generator <span class="chip">Prototype mock</span></h3>';
+      '<h3 class="section-title">Mimicry — Vibe Generator <span class="chip">Prototype mock</span>' +
+      info('mimicry:about',
+        'Prototype: finds similar songs from mock metadata. It never copies or recreates the original recording.',
+        'About Mimicry') +
+      '</h3>';
     if (seed) {
       h += '<div class="track-row seed-row">' +
         '<div class="cover" style="--hue:' + ((typeof seed.hue === 'number') ? seed.hue : 210) + '"></div>' +
@@ -111,8 +121,6 @@
       h += '<div class="empty-state">No tracks to seed from yet.</div>';
     }
     h += '<div class="mimicry-results">' + resultsHTML() + '</div>';
-    h += '<p class="tech-note">Prototype: finds similar songs from mock metadata. ' +
-      'It never copies or recreates the original recording.</p>';
     h += '</section>';
     lastContainer.innerHTML = h;
   }

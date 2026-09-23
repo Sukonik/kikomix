@@ -36,6 +36,12 @@
   function toast(msg) {
     try { if (KM.ui && typeof KM.ui.toast === 'function') KM.ui.toast(msg); } catch (e) {}
   }
+  function info(key, text, label) {
+    try {
+      if (KM.ui && typeof KM.ui.info === 'function') return KM.ui.info(key, text, label);
+    } catch (e) {}
+    return '';
+  }
   function adapters() {
     var byId = (window.KM_ADAPTERS && window.KM_ADAPTERS.byId) || {};
     return Object.keys(byId).map(function (id) {
@@ -99,15 +105,15 @@
     var st = s[id] || { connected: true };
     var tierChip = a.badge
       ? ' <span class="chip chip-tier">' + esc(a.badge) + '</span>' : '';
-    var blurb = a.blurb
-      ? '<div class="track-sub src-blurb">' + esc(a.blurb) + '</div>' : '';
+    // Free-tier honesty (blurb) hides behind ⓘ — the row stays scannable.
+    var blurbInfo = a.blurb
+      ? info('src:' + id, a.blurb, a.name + ' details') : '';
     return '<div class="track-row source-row' + (a.dimmed ? ' src-dimmed' : '') +
       '" data-source="' + esc(id) + '">' +
       '<span class="source-dot" style="background:' + esc(a.color) + '" aria-hidden="true"></span>' +
-      '<div class="track-meta"><div class="track-title">' + esc(a.name) + tierChip + '</div>' +
+      '<div class="track-meta"><div class="track-title">' + esc(a.name) + tierChip + blurbInfo + '</div>' +
       '<div class="track-sub">' + esc(a.tagline || TAGLINES[id] || 'Connected service') + '</div>' +
-      blurb + '</div>' +
-      '<span class="chip">' + (st.connected ? 'Connected' : 'Off') + '</span>' +
+      '</div>' +
       '<label class="switch"><input type="checkbox" data-conn="' + esc(id) + '"' +
       (st.connected ? ' checked' : '') + ' aria-label="Connect ' + esc(a.name) + '"><span></span></label>' +
       '<button class="btn btn-ghost" data-act="up" data-id="' + esc(id) + '" title="Move up in priority" aria-label="Move ' + esc(a.name) + ' up">↑</button>' +
@@ -130,7 +136,11 @@
       if (adapterById(id).tier === 'more') moreIds.push(id);
       else freeIds.push(id);
     });
-    var h = '<h3 class="section-title">Connections</h3>';
+    var h = '<h3 class="section-title">Connections' +
+      info('src:mock',
+        'Mock connections — real OAuth plugs in later. The order above sets your preferred-service priority for playback.',
+        'About connections') +
+      '</h3>';
     if (!freeIds.length && !moreIds.length) {
       h += '<div class="empty-state">No services registered yet.</div>';
     }
@@ -142,8 +152,6 @@
       '<p class="track-sub">Apple Music needs a subscription; ' +
       'local files are yours.</p>' +
       moreIds.map(function (id) { return sourceRow(id, s); }).join('');
-    h += '<p class="tech-note">Mock connections — real OAuth plugs in later. ' +
-      'The order above sets your preferred-service priority for playback.</p>';
     // Brand picker (in-app icon variant + accent). Owned by js/brand.js;
     // guarded so Sources still renders if that module failed to load.
     try {

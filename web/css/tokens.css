@@ -4,7 +4,8 @@
    clarity, keeping KikoMix's dark identity + signature orange
    brand accent.
 
-   Vanilla CSS. No dependencies. Mobile-first. System fonts only.
+   Vanilla CSS. No dependencies. Mobile-first. Self-hosted Inter
+   (ships with the app — zero external requests).
 
    Conventions
    - Surfaces use M3 tonal steps (container-lowest → highest),
@@ -17,7 +18,20 @@
      heavy shadows).
    ============================================================ */
 
+/* Self-hosted Inter variable font (OFL license, latin subset).
+   Ships with the app in assets/fonts — zero external requests. */
+@font-face {
+  font-family: "Inter";
+  src: url("../assets/fonts/inter-var-latin.woff2") format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root {
+  /* ---------- Self-hosted display font (see @font-face above) ---------- */
+  --font-stack: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, system-ui, sans-serif;
   /* ---------- M3 tonal surfaces (dark) ---------- */
   --surface: #0e0e12;                  /* app background */
   --surface-container-lowest: #08080b; /* deepest recess */

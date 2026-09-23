@@ -47,7 +47,7 @@ Playlists are KikoMix's save system — deliberately simple:
 No separate, complicated music-library system in v1.
 
 ### 🧭 Navigation
-Five tabs, nothing more: **Search** · **Playlists** · **Now Playing** · **Connections** · **Settings**
+Six tabs, nothing more: **Home** · **Search** · **Library** · **Mixes** · **Now Playing** · **Sources**
 
 Search opens by default on every launch.
 
