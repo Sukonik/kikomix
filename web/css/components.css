@@ -895,46 +895,6 @@ input:not([type]):focus {
    chrome AROUND the artwork (rings, glows, selected states) — the
    artwork itself is never stretched, recolored, or gradient-washed. */
 
-/* Home hero: character-full.jpg as the welcome moment, integrated into the
-   existing .brand-hero lockup (primary mark + logotype, owned above).
-   The artwork keeps its natural aspect (never stretched) on black. */
-.brand-hero__character {
-  display: block;
-  width: auto;
-  max-width: 100%;
-  height: auto;
-  max-height: 380px;
-  border-radius: var(--shape-lg);
-  border: 1px solid var(--outline-variant);
-  background: #000; /* the mark's own surface */
-}
-.brand-hero__welcome {
-  display: flex;
-  gap: var(--space-3);
-  align-items: flex-start;
-  max-width: 560px;
-  text-align: left;
-}
-.brand-hero__badge {
-  width: 40px;
-  height: 40px;
-  flex-shrink: 0;
-  border-radius: var(--shape-md);
-  box-shadow: 0 0 0 1px color-mix(in srgb, var(--brand-accent) 50%, transparent),
-              0 0 16px color-mix(in srgb, var(--brand-accent) 30%, transparent);
-}
-.brand-hero__title {
-  font-size: var(--ts-title-lg);
-  font-weight: var(--weight-bold);
-  letter-spacing: -.01em;
-  color: var(--on-surface);
-}
-.brand-hero__copy {
-  margin-top: var(--space-1);
-  font-size: var(--ts-body-md);
-  color: var(--on-surface-variant);
-}
-
 /* Section header mark (small, round, tasteful). */
 .section-mark {
   width: 32px;

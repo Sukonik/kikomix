@@ -37,9 +37,11 @@
   </header>
 
   <main id="main">
-    <!-- HOME -->
+    <!-- HOME: content first — branding lives in the header + onboarding. -->
     <section class="tab" id="tab-home" role="tabpanel" aria-label="Home">
-      <!-- Brand hero: primary mark + logotype lockup (assets/brand). -->
+      <!-- Brand hero: primary mark + logotype lockup (assets/brand).
+           Full on first visit; renderHome collapses it to the welcome line
+           for returning visitors (km:lion-intro set). -->
       <section class="brand-hero" aria-label="KikoMix brand">
         <img src="assets/brand/logo-primary.jpg" alt="KikoMix primary mark"
              class="brand-hero__mark" width="120" height="100">
@@ -58,13 +60,11 @@
           </div>
         </div>
       </section>
-      <div id="home-lion" class="card"><!-- LionDavid intro card mounts here --></div>
+      <div id="home-lion" class="card"><!-- LionDavid intro strip mounts here --></div>
       <h2 class="section-title">Recently played</h2>
       <div id="home-recent" class="track-list"></div>
       <h2 class="section-title">Recommended for you</h2>
       <div id="home-recommended" class="track-list"></div>
-      <h2 class="section-title">Services</h2>
-      <div id="home-services" class="chips"></div>
     </section>
 
     <!-- SEARCH -->
@@ -107,7 +107,7 @@
          class="app-credits__mark" width="48" height="40">
     <img src="assets/brand/logotype.jpg" alt="KikoMix"
          class="app-credits__wordmark" width="120" height="30">
-    <p class="app-credits__text">© 2026 KikoMix · Search → Play → Save</p>
+    <p class="app-credits__text">© 2026 KikoMix · Focus Every Sound</p>
   </footer>
 
   <!-- Persistent player bar (rendered by KM.player; hidden until a track is active).

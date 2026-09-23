@@ -71,6 +71,7 @@
       '</svg>';
   }
 
+
   /* ---------- tips ---------- */
   // Tips speak free-tier first: "Free" sources open free on the provider
   // (no subscription needed there), and "Open in provider" takes the

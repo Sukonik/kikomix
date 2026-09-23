@@ -115,13 +115,6 @@ section.tab.active { display: block; }
   #mixes-root { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
 }
 
-/* Service chips become a tidy grid instead of one long column. */
-#home-services.chips {
-  display: grid;
-  gap: var(--space-2);
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-}
-
 /* ---------- Touch targets (>=48px) ---------- */
 #tabbar > button,
 .player .icon-btn,

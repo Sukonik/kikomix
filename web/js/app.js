@@ -78,25 +78,6 @@
       }
     }
 
-    // Service chips from the adapter list (honest: mock unless sources module says otherwise).
-    var svcEl = document.getElementById('home-services');
-    if (svcEl) {
-      var list = (window.KM_ADAPTERS && Array.isArray(window.KM_ADAPTERS.list)) ? window.KM_ADAPTERS.list : [];
-      if (!list.length) {
-        svcEl.innerHTML = '<p class="empty">No services yet — adapters are still loading.</p>';
-      } else {
-        svcEl.innerHTML = list.map(function (a) {
-          var connected = true;
-          try {
-            if (window.KM.sources && typeof window.KM.sources.isConnected === 'function') {
-              connected = !!window.KM.sources.isConnected(a.id);
-            }
-          } catch (e) {}
-          return '<button type="button" class="chip' + (connected ? ' on' : '') + '" data-goto="sources">' +
-            '<span class="dot" aria-hidden="true"></span>' + esc(a.name || a.label || a.id) + '</button>';
-        }).join('');
-      }
-    }
   }
 
   function wireSearch() {
@@ -133,7 +114,7 @@
   }
 
   function wireHome() {
-    // Delegated play buttons on home rows + service chips jump to Sources tab.
+    // Delegated play buttons on home rows.
     ['home-recent', 'home-recommended'].forEach(function (id) {
       var el = document.getElementById(id);
       if (!el) return;
@@ -146,11 +127,6 @@
           window.KM.player.play(tid, src);
         }
       });
-    });
-    var svc = document.getElementById('home-services');
-    if (svc) svc.addEventListener('click', function (e) {
-      var chip = e.target.closest ? e.target.closest('[data-goto]') : null;
-      if (chip && svc.contains(chip)) window.KM.ui.showTab(chip.getAttribute('data-goto'));
     });
   }
 

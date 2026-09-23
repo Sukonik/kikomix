@@ -154,8 +154,17 @@
       moreIds.map(function (id) { return sourceRow(id, s); }).join('');
     // Brand picker (in-app icon variant + accent). Owned by js/brand.js;
     // guarded so Sources still renders if that module failed to load.
+    // Collapsed into an "Appearance" disclosure — the 12-icon gallery used
+    // to dominate this tab.
     try {
-      if (KM.brand && typeof KM.brand.sectionHTML === 'function') h += KM.brand.sectionHTML();
+      if (KM.brand && typeof KM.brand.sectionHTML === 'function') {
+        h += '<details class="labs-row"><summary><span>Appearance</span>' +
+          info('src:appearance',
+            'Customize KikoMix\'s in-app icon and accent color. Your installed ' +
+            'home-screen icon is set by your OS at install time and can\'t be changed from here.',
+            'About Appearance') +
+          '</summary><div class="labs-body">' + KM.brand.sectionHTML() + '</div></details>';
+      }
     } catch (e) {}
     root.innerHTML = h;
   }
