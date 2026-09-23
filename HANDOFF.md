@@ -66,6 +66,39 @@ tickets instead of just changing them:
    real tab set and fix the README to match; I'd bet Settings needs to
    exist regardless of what else changes, just to give #3 a home.
 
+## New: Kiko Radio — real, keyless playback (this branch)
+
+Nathan asked for a functional playback option using "open music keys... no
+account needed" — added `web/js/radio.js` + a new `#np-radio` panel on the
+Now Playing tab, wired via the existing `km:tab` event so it lazy-loads
+(no YouTube network requests until a user actually opens Now Playing).
+
+It streams **NCS's own official "Copyright Free Music" YouTube playlist**
+(`PLRBp0Fe2GpgnIh0AiYKh7o7HnYAej-5ph` — verified via web search, not
+guessed) through the real, official YouTube IFrame Player API — the same
+integration the Sources tab already promises for YouTube ("no account
+needed"), just actually implemented for one real, always-licensed catalog
+instead of only the invented mock catalog. Real play/pause/next/prev,
+driven by the actual YT.Player API, honestly labeled as real (not
+simulated) with a note that normal YouTube ads may apply. Kept out of
+`.tech-panel` styling on purpose — this is a real feature, not a
+prototype toy, so it uses the plain `.card` style instead (matches the
+"don't let gimmicks outweigh core features" note above).
+
+**Caveat, so nobody chases a phantom bug**: I could not get full
+end-to-end confirmation (audio actually reaching PLAYING state) inside
+this dev sandbox — YouTube's embed bootstrap is HTTP/2-heavy and this
+sandbox's outbound proxy doesn't handle that class of request cleanly
+(`ERR_TOO_MANY_RETRIES` on YouTube's own `ytembeds` bootstrap JS,
+reproduced 3× on different resources each time — a proxy limitation, not
+something in the request itself). I did confirm: the API script loads,
+`YT.Player` constructs without error, and the iframe mounts with the
+correct src (`listType=playlist&list=<verified id>&enablejsapi=1&origin=…`)
+— i.e. the integration is wired correctly per the official pattern. Please
+verify actual audio playback on the real deployed URL (a normal browser,
+no proxy in the way) before calling this done — I'd bet it just works
+there, but "I'd bet" isn't verification.
+
 ## General encouragement on UI/UX
 
 The design system itself (`web/DESIGN.md`) is legitimately well thought
