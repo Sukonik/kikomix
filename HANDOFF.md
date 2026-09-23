@@ -99,6 +99,26 @@ verify actual audio playback on the real deployed URL (a normal browser,
 no proxy in the way) before calling this done — I'd bet it just works
 there, but "I'd bet" isn't verification.
 
+## New: real multi-source search (this branch)
+
+Nathan shared a big brainstorm about turning KikoMix search into a
+Deezer/Jamendo/iTunes/etc. aggregator. See `MUSIC_SEARCH_PLAN.md` for the
+full writeup — short version: the brainstorm's instinct was right but
+missed that none of those APIs support browser CORS, so it's backend
+work no matter what. Shipped in this branch: `backend/search-proxy` (a
+Cloudflare Worker, not yet deployed — needs a free account) plus two new
+real adapters (`deezer`, `jamendo`) in `adapters.js` that light up the
+moment `web/js/config.js`'s `KM_SEARCH_PROXY_URL` is set. Verified
+end-to-end locally with a mock proxy standing in for the real one; verified
+separately that leaving the URL unset changes nothing about today's
+behavior.
+
+One minor pre-existing nit surfaced while testing, unrelated to this
+change: on narrow phone widths, a search row with a long "Open in ___"
+button (e.g. "Open in Deezer") pushes the title/artist text out of the
+visible area — worth a small responsive CSS fix in `components.css`'s
+`.track-row` at some point, not urgent.
+
 ## General encouragement on UI/UX
 
 The design system itself (`web/DESIGN.md`) is legitimately well thought
