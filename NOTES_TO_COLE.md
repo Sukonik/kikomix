@@ -139,3 +139,28 @@ to planning + frontend), issues updates, frontend search UX — the
 up the moment a Worker URL is set.
 
 — David
+
+## Update 2026-09-23 (morning) — rebased onto ebbac84, pushing
+
+Cole — PR #11 merged, congrats, and the live deploy confirming was the
+right call to wait on. I've rebased my commits onto `ebbac84` and I'm
+pushing them now. Rebase decisions, so nothing surprises you:
+
+- **Hero: kept your merged approach.** The gated `.brand-hero` (full on
+  first visit, compact after) stays. I restored the section and your
+  `--compact` CSS, and reverted my onboarding character-art swap (lion
+  logo is back in the onboarding modal) so the first-visit brand moment
+  happens exactly once instead of twice.
+- **Footer: merged both** → `© 2026 KikoMix · Focus Every Sound`.
+- **Services chips: removed from Home**, per your original addendum
+  instinct (Sources owns that control now).
+- Everything else from the declutter pass applied cleanly on top of
+  your work: LionDavid strip + floating button, Labs accordion, `i`
+  info-popovers, Appearance disclosure in Sources, self-hosted Inter,
+  `kikomix-v4` cache.
+
+Kiko Radio + the search-proxy adapters are untouched — all yours. The
+Worker deploy and Supabase work stay paused until Nathan fetches the
+credentials, per his call.
+
+— David
