@@ -297,6 +297,15 @@ button.chip:hover {
 .brand-hero__mark { height: 96px; width: auto; }
 .brand-hero__wordmark { width: min(260px, 70%); height: auto; }
 
+/* Returning visitors (km:lion-intro already set) already saw the full
+   lockup once during onboarding and see the mark+wordmark again in the
+   persistent header — collapse to just the short welcome line so Home
+   leads with content on every return visit, not brand art. */
+.brand-hero--compact { padding-block: var(--space-4); }
+.brand-hero--compact .brand-hero__mark,
+.brand-hero--compact .brand-hero__wordmark,
+.brand-hero--compact .brand-hero__character { display: none; }
+
 /* Credits footer at the end of the page. */
 .app-credits {
   display: flex;

@@ -56,8 +56,12 @@
 
   // Adapter search() hits are shaped { trackId, sourceId, title, artist, album, durationSec }.
   // Normalize to the catalog's { id, ... } shape so play(trackId) resolves.
+  // Real-source hits (Deezer/Jamendo, see adapters.js) also carry
+  // externalUrl/artwork -- fold externalUrl into providerLinks so the
+  // existing "Open in provider" logic (providerLinkFor, above) picks it up
+  // with no changes of its own.
   function normalizeHit(h) {
-    return {
+    var track = {
       id: h.trackId != null ? h.trackId : h.id,
       title: h.title,
       artist: h.artist,
@@ -66,6 +70,12 @@
       energy: h.energy,
       hue: h.hue
     };
+    if (h.artwork) track.artwork = h.artwork;
+    if (h.externalUrl && h.sourceId) {
+      track.providerLinks = {};
+      track.providerLinks[h.sourceId] = h.externalUrl;
+    }
+    return track;
   }
 
   function findCatalogTrack(id) {

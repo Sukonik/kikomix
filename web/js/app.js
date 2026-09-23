@@ -40,6 +40,18 @@
   function renderHome() {
     var esc = window.KM.ui.esc;
 
+    // Returning visitors already saw the full mark+wordmark+character lockup
+    // during onboarding (km:lion-intro, set by liondavid.js) and see it again
+    // in the persistent header above — collapse to the short welcome line so
+    // Home leads with Recently played / Recommended, not brand art, on every
+    // return visit.
+    var heroEl = document.querySelector('.brand-hero');
+    if (heroEl) {
+      var seenIntro = false;
+      try { seenIntro = !!localStorage.getItem('km:lion-intro'); } catch (e) {}
+      heroEl.classList.toggle('brand-hero--compact', seenIntro);
+    }
+
     // Recently played (localStorage km:recent, ids, max 20) — needs KM_DATA or a resolvable id.
     var recentEl = document.getElementById('home-recent');
     if (recentEl) {

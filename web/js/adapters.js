@@ -168,6 +168,70 @@
     })
   ];
 
+  /* ---- Real, keyless sources via the KikoMix search-proxy ----------------
+   * Deezer and Jamendo have genuinely free, no-login catalogs with real
+   * playable audio (Deezer 30s previews, Jamendo full CC-licensed streams),
+   * but neither API sends CORS headers, so the browser can't call them
+   * directly (see backend/search-proxy/README.md). window.KM_SEARCH_PROXY_URL
+   * (set in web/js/config.js) points at that Worker once deployed; until
+   * then proxySearch() resolves to [] with no network call at all, so the
+   * app behaves exactly as the all-mock MVP does today. */
+  function proxySearch(provider, query) {
+    var base = window.KM_SEARCH_PROXY_URL;
+    if (!base) return Promise.resolve([]);
+    var url = base.replace(/\/$/, '') + '/search?provider=' + encodeURIComponent(provider) +
+      '&q=' + encodeURIComponent(query);
+    return fetch(url)
+      .then(function (res) { if (!res.ok) throw new Error('search-proxy ' + res.status); return res.json(); })
+      .then(function (data) {
+        return Array.isArray(data && data.results) ? data.results.map(function (r) {
+          return {
+            trackId: provider + ':' + r.providerId,
+            sourceId: provider,
+            title: r.title,
+            artist: r.artist,
+            album: r.album,
+            durationSec: r.durationSec,
+            artwork: r.artwork,
+            previewUrl: r.previewUrl,
+            externalUrl: r.externalUrl
+          };
+        }) : [];
+      })
+      .catch(function () { return []; }); // one real source having a bad day never breaks search
+  }
+
+  function realResolve(name) {
+    return function () {
+      return {
+        streamUrl: null, requiresAuth: false, simulated: true,
+        note: 'Open in ' + name + ' for full playback — KikoMix links out rather than re-hosting.'
+      };
+    };
+  }
+
+  var deezer = new ProviderAdapter({
+    id: 'deezer', name: 'Deezer', color: '#a238ff',
+    tagline: 'Real catalog search across millions of tracks, with 30-second previews.',
+    badge: 'Free', tier: 'free',
+    blurb: 'Real search results and 30-second previews, no account needed — ' +
+      'open the full track in Deezer.'
+  });
+  deezer.search = function (query) { return proxySearch('deezer', query); };
+  deezer.resolve = realResolve('Deezer');
+
+  var jamendo = new ProviderAdapter({
+    id: 'jamendo', name: 'Jamendo', color: '#f5a623',
+    tagline: 'Independent, Creative-Commons-licensed tracks — full streams, no login.',
+    badge: 'Free', tier: 'free',
+    blurb: 'Genuinely free, full-length streams of independent artists under ' +
+      'Creative Commons licenses — no account, no subscription.'
+  });
+  jamendo.search = function (query) { return proxySearch('jamendo', query); };
+  jamendo.resolve = realResolve('Jamendo');
+
+  list.push(deezer, jamendo);
+
   var byId = {};
   list.forEach(function (a) { byId[a.id] = a; });
 
