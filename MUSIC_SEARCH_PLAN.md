@@ -78,15 +78,45 @@ real "Open in ___" links, real audio *available* via `previewUrl`) but
 play through the same simulated timer as everything else until that
 follow-up lands.
 
-## Query classification (artist vs. genre)
+## Searching by artist name, genre, album, and song name (2026-09-23 update)
 
-The brainstorm's two-mode idea (artist search vs. genre search) is worth
-having, but doesn't need to be a new subsystem. The proxy Worker includes
-a small `GENRE_WORDS` set (~30 common genre terms) and picks Jamendo's
-`tags=` vs `namesearch=` parameter based on a simple membership check —
-that's the entire "classifier" for now. Deezer and iTunes don't need this
-distinction; their own search already handles both cases well. Don't
-build a bigger classifier than the sources actually need.
+Nathan asked specifically for this: search and retrieval that works when
+the query is an artist name, a genre, an album name, or a song name. The
+proxy now supports an explicit `field=artist|album|track|genre` parameter
+(default `auto`), using each provider's verified real syntax:
+
+- **iTunes**: `attribute=artistTerm|albumTerm|songTerm|genreTerm` —
+  verified live against the real API for `artist` and `album`, both
+  returned correct, exact results (e.g. `field=artist&q=Nickelback`
+  returns Nickelback's own tracks; `field=album&q=Silver Side Up` returns
+  tracks from that exact album).
+- **Jamendo**: dedicated `artist_name=` / `album_name=` / `namesearch=`
+  (track) / `tags=` (genre) filter params, confirmed against the official
+  docs (developer.jamendo.com) rather than assumed. Also added Jamendo's
+  broad `search=` param (matches track+artist+album+tags at once) as the
+  `auto` default, replacing the earlier `namesearch`-only default, which
+  would have missed artist-name queries entirely.
+- **Deezer — a real bug found and fixed**: the commonly-documented
+  advanced query operators (`q=artist:"x"`, `album:"x"`, `track:"x"`) were
+  tested directly against the live API and **returned zero results even
+  for exact, well-known names** (`artist:"Daft Punk"` → empty). What
+  actually works, also verified live: Deezer's dedicated REST endpoints
+  (`/search/artist`, `/search/album`, `/search/track`) — the artist/album
+  cases need a follow-up call (`/artist/{id}/top`, `/album/{id}/tracks`)
+  to get actual playable tracks, since the search endpoints return the
+  entity, not its tracks. Worth remembering next time a tutorial cites the
+  `field:"value"` syntax: it didn't work here, don't trust it without
+  testing.
+
+Query classification into these four types is a `GENRE_WORDS` membership
+check (~30 terms) for genre auto-detection, plus the `field` param for
+explicit control (not yet wired to any frontend UI — the single search box
+still sends `auto`, which already benefits from Jamendo's improved
+`search=` default and each provider's already-broad general search). A
+filter-chip UI ("Artist / Album / Song / Genre") to expose `field`
+explicitly would be a small, separate frontend addition if wanted later —
+not built now since it wasn't asked for and the `auto` default already
+covers all four query types reasonably well.
 
 ## Tier 1 (shipped) vs. later
 

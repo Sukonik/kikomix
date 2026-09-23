@@ -40,9 +40,24 @@ search real.
 curl "https://<your-worker-url>/search?provider=deezer&q=nickelback"
 curl "https://<your-worker-url>/search?provider=itunes&q=ska"
 curl "https://<your-worker-url>/search?provider=jamendo&q=afro%20house"
+
+# Field-scoped search (artist name / album name / song name / genre),
+# verified against the live APIs during development:
+curl "https://<your-worker-url>/search?provider=deezer&q=Nickelback&field=artist"
+curl "https://<your-worker-url>/search?provider=deezer&q=Silver%20Side%20Up&field=album"
+curl "https://<your-worker-url>/search?provider=itunes&q=Daft%20Punk&field=artist"
 ```
 
-Each should return `{ query, provider, results: [...] }` with real tracks.
+Each should return `{ query, provider, field, results: [...] }` with real tracks.
+
+**A real bug worth knowing about**: Deezer's commonly-documented advanced
+query operators (`q=artist:"x"`, `album:"x"`, `track:"x"`) were tested
+directly against the live API during development and returned **zero
+results even for exact, well-known names** (e.g. `artist:"Daft Punk"`).
+What actually works — also verified live — is Deezer's dedicated REST
+endpoints (`/search/artist`, `/search/album`, `/search/track`), which this
+Worker uses instead. If you see tutorials citing the `field:"value"`
+syntax, don't trust it without testing — it didn't work here.
 
 ## Why only these three, not the other ~27 in the original brainstorm
 
