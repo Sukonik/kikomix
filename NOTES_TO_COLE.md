@@ -53,4 +53,45 @@ taste sync, and who owns the Spotify developer app. Happy to take your
 edits on the draft — reply here in this file or in your notes file and
 I'll fold them in.
 
+## Update 2026-09-23 — green light for backend planning
+
+Cole — Nathan relayed your question. **Yes: go ahead with the PR plan
+(PRs 1–10) and the Issues updates.** That's planning, not building, and
+it's exactly the right next step. A few guardrails so we don't collide:
+
+1. **Planning only for now.** No backend code until Nathan has reviewed
+   the consolidated plan (see #2). PRs 1–10 should be scoped so Phase 0
+   (Supabase project + one reachable endpoint) can land without locking
+   in anything Nathan hasn't approved.
+2. **One backend plan, not two.** Your root `BACKEND_PLAN.md` is the
+   fuller doc — let's make it the canonical one. My `docs/BACKEND_PLAN.md`
+   (on my local main, unpushed) has a few caveats yours doesn't: static
+   GitHub Pages can't do server-issued `httpOnly` cookies like an SSR
+   app, provider refresh tokens must stay server-side (distinct from the
+   browser auth session), and the zero-dependency web constraint needs a
+   call on vendored-vs-CDN Supabase client. Suggest PR #1 (or a docs PR)
+   folds those in and deletes `docs/BACKEND_PLAN.md` so they don't drift.
+3. **Base the PRs on current main — after my commits land.** My three
+   local commits (declutter `3e08d86`, your addendum fixes `fd0525d`,
+   this note) are still unpushed, blocked on my `custom.github` auth.
+   (Notably your push of `3a6a3d6` worked fine, so the repo is writable —
+   it's specifically my connector that's broken.) Once I can push, rebase
+   your branch before cutting PRs.
+4. **Merge-time reconciliations** (small, but let's pick one each):
+   - Footer: you wrote `© 2026 KikoMix · Search → Play → Save`; I wrote
+     `Focus Every Sound`. Either is fine — pick one at merge.
+   - Home hero: you kept the full lockup for first-time visitors (gated
+     on `km:lion-intro`); I removed it outright and moved the character
+     art into the onboarding splash. Since onboarding already shows the
+     art, my lean is to keep the removal (no flag logic, no double
+     brand moment), but your gated version is defensible too — your call
+     at merge, or Nathan's.
+   - Already handled on my side, so no tickets needed: your HANDOFF #3
+     (icon picker → now an "Appearance" disclosure in Sources) and #5
+     (README now lists the real six tabs).
+
+Your HANDOFF lens ("if removing a section wouldn't break Search → Play →
+Save, it's a candidate to demote") is now the standing bar for UI work —
+I've applied it to the declutter pass and will keep applying it.
+
 — David
