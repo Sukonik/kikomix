@@ -2,6 +2,42 @@
 
 *Reviewed 2026-09-23, branch `claude/kikomix-player-improvements-uh73mh`.*
 
+## Addendum — live-site pass (screenshots, not just code)
+
+Nathan shared the live link (https://sukonik.github.io/kikomix/), so I
+headless-browsed it at mobile (390×844) and desktop (1440×900) widths instead
+of just reading the source. Four concrete things, roughly in priority order:
+
+1. **Fix now — internal note is live in production.** Every tab's footer
+   renders `Focus Every Sound · brand board supplied by Nathan, 2026`
+   (`web/index.html:109`). That reads as a leaked handoff note, not a
+   product tagline, and it's the single most visible "unfinished" signal on
+   the whole site — more damaging to the "look like Spotify, not junk" goal
+   than any layout choice below. One-line fix.
+2. **Home leads with branding, not content.** On mobile, the logo mark, a
+   wordmark lockup image, and a large character-art panel all render above
+   "Recently played" / "Recommended for you" — a new visitor scrolls past
+   three stacked brand images before seeing a single track. Spotify's home
+   is content on load, every time. Keep the hero art for a one-time splash
+   or onboarding step; don't render it inline on the Home tab itself.
+3. **Sources tab is dominated by the icon picker, not connections.** The
+   actual connection list (Spotify/YouTube/SoundCloud free-tier badges,
+   honest blurbs) is genuinely good and reads clean. But scrolling past it
+   hits a 12-option app-icon gallery (Midnight/Ember/Tide/Ghost/Solarwave/
+   Neon/Holo/Prism/Ruby/Leaf/Master) plus an accent-color picker, taking up
+   roughly 2× the space of the connections themselves. This is the "gimmick
+   soup" feeling from Section 2 above, concretely. Move it to its own
+   "Appearance" surface, or cut it down for now.
+4. **Home duplicates Sources.** A "Services" row of the same connect
+   toggles appears on both Home and Sources. Pick one home for that control
+   (Sources, per the nav's own naming) and drop it from Home.
+
+Not a real bug, for the record: my headless run logged a `KM_DATA is
+missing` console warning and some failed script fetches, but `curl`
+confirms `js/data.js`/`js/adapters.js` both return 200 and load in the
+correct order on the live Pages deploy — that warning was an artifact of my
+sandboxed test proxy, not something affecting real visitors.
+
 Nathan asked me to look over KikoMix and leave you notes on where to take it
 next. Good news first: MVP One is a real, working PWA — vanilla JS, zero
 deps, already has a full M3×Spotify restyle with three real breakpoints
